@@ -35,30 +35,36 @@ const removeFromCart = async (req, res) => {
    }
 
 }
+
+// get user cart
 const getCart = async (req, res) => {
    try {
-       let userData = await userModel.findById(req.body.userId);
-       if (!userData) {
-           return res.json({ success: false, message: "User not found" });
-       }
-       let cartData = userData.cartData;
-       res.json({ success: true, cartData: cartData });
-   } catch (error) {
-       console.log(error);
-       res.json({ success: false, message: "Error" });
-   }
-}
-/*
-const getCart = async (req, res) => {
-   try {
-      let userData = await userModel.findById(req.body.userId);
-      let cartData = await userData.cartData;
-      res.json({ success: true, cartData:cartData });
+      const userId = req.body.userId;
+
+      // Vérifier si l'ID de l'utilisateur est fourni
+      if (!userId) {
+         return res.status(400).json({ success: false, message: "User ID is required" });
+      }
+
+      // Rechercher l'utilisateur par son ID
+      const userData = await userModel.findById(userId);
+
+      // Vérifier si aucun utilisateur n'est trouvé
+      if (!userData) {
+         return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      // Accéder à la propriété cartData de l'utilisateur
+      const cartData = userData.cartData;
+
+      // Renvoyer les données du panier de l'utilisateur
+      res.json({ success: true, cartData: cartData });
    } catch (error) {
       console.log(error);
-      res.json({ success: false, message: "Error" })
+      res.status(500).json({ success: false, message: "Internal Server Error" });
    }
-}*/
+}
 
 
-export { addToCart, removeFromCart, getCart}
+
+export { addToCart, removeFromCart, getCart }

@@ -12,8 +12,10 @@ const Navbar = ({ setShowLogin }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     setToken("");
-    navigate('/')
+    navigate('/');
+    window.location.reload();
   }
 
   return (
@@ -24,7 +26,6 @@ const Navbar = ({ setShowLogin }) => {
         <a href='#explore-menu' onClick={() => setMenu("menu")} className={`${menu === "menu" ? "active" : ""}`}>menu</a>
         <a href='#app-download' onClick={() => setMenu("mob-app")} className={`${menu === "mob-app" ? "active" : ""}`}>mobile app</a>
         <a href='#footer' onClick={() => setMenu("contact")} className={`${menu === "contact" ? "active" : ""}`}>contact us</a>
-        <a href='#footer' onClick={() => setMenu("contact")} className={`${menu === "contact" ? "active" : ""}`}>Parrainer</a>
       </ul>
       <div className="navbar-right">
         <img src={assets.search_icon} alt="" />
@@ -37,8 +38,10 @@ const Navbar = ({ setShowLogin }) => {
             <img src={assets.profile_icon} alt="" />
             <ul className='navbar-profile-dropdown'>
               <li onClick={()=>navigate('/myorders')}> <img src={assets.bag_icon} alt="" /> <p>Orders</p></li>
+              <li onClick={()=>navigate('/api/user/details')}> <img src={assets.profile_icon} alt="" /> <p>Profile</p></li>
               <hr />
               <li onClick={logout}> <img src={assets.logout_icon} alt="" /> <p>Logout</p></li> 
+              
             </ul>
           </div>
         }
