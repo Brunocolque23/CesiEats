@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { assets, url } from '../../assets/assets';
 
-const ParrainerRestaurante = () => {
+const ParrainerRestaurant = () => {
     const [data, setData] = useState({
         name: "",
         localisation: "",
@@ -21,10 +21,12 @@ const ParrainerRestaurante = () => {
             if (response.data.success) {
                 toast.success(response.data.message);
                 
+                await axios.post(`${url}/send-email`, { email: data.email });
+
                 setData({
                     name: "",
                     localisation: "",
-                    password:"",
+                    password:"1234",
                     phone: "",
                     email: ""
                 });
@@ -32,8 +34,8 @@ const ParrainerRestaurante = () => {
                 toast.error(response.data.message);
             }
         } catch (error) {
-            console.error('Error:', error);
-            // Manejo de errores
+            console.error('Erreur:', error);
+            toast.error('Erreur lors de l\'ajout du restaurant ou de l\'envoi de l\'email');
         }
     }
 
@@ -55,27 +57,27 @@ const ParrainerRestaurante = () => {
             </div>
             <form className='flex-col' onSubmit={onSubmitHandler}>
                 <div className='profile-section flex-col'>
-                    <p>Nom del restaurante</p>
-                    <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='nom del restaurante' required />
+                    <p>Nom du restaurant</p>
+                    <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='Nom du restaurant' required />
                 </div>
                 <div className='profile-section flex-col'>
                     <p>Localisation</p>
                     <input name='localisation' onChange={onChangeHandler} value={data.localisation} type="text" placeholder='Localisation' required />
                 </div>
                 <div className='profile-section flex-col'>
-                    <p>Phone</p>
-                    <input name='phone' onChange={onChangeHandler} value={data.phone} type="text" placeholder='phone' required />
+                    <p>Téléphone</p>
+                    <input name='phone' onChange={onChangeHandler} value={data.phone} type="text" placeholder='Téléphone' required />
                 </div>
                 <div className='profile-section flex-col'>
                     <p>Courrier électronique</p>
                     <input name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Courrier électronique' required />
                 </div>
                 <div className="button-container">
-                    <button type="submit" className="btn btn-primary profile-btn">Add</button>
+                    <button type="submit" className="btn btn-primary profile-btn">Ajouter</button>
                 </div>
             </form>
         </div>
     )
 }
 
-export default ParrainerRestaurante;
+export default ParrainerRestaurant;

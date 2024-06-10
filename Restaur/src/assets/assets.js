@@ -6,11 +6,21 @@ import profile_image from './profile_image.png'
 import upload_area from './upload_area.png'
 import parcel_icon from './parcel_icon.png'
 import parrainer from './restaurant.png'
+import order_list from './order_list_icon.png'
+import historique from './historique_icon.png'
+import refer from './refer_icon.png'
+import accept from './Accept.png'
+
+
 
 export const assets ={
     logo,
     add_icon,
     order_icon,
+    order_list,
+    historique,
+    accept,
+    refer,
     profile_icon,
     profile_image,
     parrainer,
