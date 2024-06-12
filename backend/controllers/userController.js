@@ -65,13 +65,25 @@ const registerUser = async (req, res) => {
         // Create new user
         const newUser = new userModel({name, email, password: hashedPassword, role});
         const user = await newUser.save();
-        toast.error(role);
+        
+        //console.log(name);
+        //console.log(email);
+        
         // If role is "restaurateur", create new restaurant for the user
         if (role === "restaurateur") {
+            
             const newRestaurant = new restaurantModel({ name: `${name}'s Restaurant`, email,password });
             await newRestaurant.save();
+            //console.log(role);
             
         }
+        if (role === "livreur") {
+            const newLivreur = new livreurModel({ name: name, email,password });
+            await newLivreur.save();
+            //console.log(role);
+            
+        }
+        
 
         const token = createToken(user._id);
         res.json({success: true, token, role: user.role});

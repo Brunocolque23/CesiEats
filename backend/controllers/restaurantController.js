@@ -92,6 +92,7 @@ const findRestaurantByName = async (req, res) => {
     }
 }
 
+
 const getTotalOrders = async (startDate, endDate, product) => {
     try {
         const filter = {};

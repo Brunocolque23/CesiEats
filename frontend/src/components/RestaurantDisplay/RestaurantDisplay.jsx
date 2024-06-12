@@ -15,11 +15,11 @@ const RestaurantDisplay = ({ onRestaurantClick, selectedRestaurant }) => {
     if (currentTime - lastClickTime < doubleClickThreshold) {
       // Deseleccionar restaurante
       onRestaurantClick("All");
-      toast.info("Restaurant deselected");
+     // toast.info("Restaurant deselected");
     } else {
       // Si no es un doble clic, actualizar el tiempo del último clic
       setLastClickTime(currentTime);
-      toast.info(`Restaurant "${restaurantName}" selected`);
+     // toast.info(`Restaurant "${restaurantName}" selected`);
       onRestaurantClick(restaurantName); // Llama a la función proporcionada desde Home
     }
   };

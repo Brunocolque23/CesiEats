@@ -13,7 +13,7 @@ const Add = () => {
         category: "Salad",
         restaurant: ""
     });
-
+    const restaurantname = localStorage.getItem('restaurantname');
     const [image, setImage] = useState(false);
 
     const onSubmitHandler = async (event) => {
@@ -64,7 +64,7 @@ const Add = () => {
                 </div>
                 <div className='add-restaurant flex-col'>
                     <p>Restaurant</p>
-                    <input name='restaurant' onChange={onChangeHandler} value={data.restaurant} type="text" placeholder='Bembos' required />
+                    <input name='restaurant' onChange={onChangeHandler} value={data.restaurant} type="text" placeholder={restaurantname} required disabled />
                 </div>
                 <div className='add-product-description flex-col'>
                     <p>Article description</p>

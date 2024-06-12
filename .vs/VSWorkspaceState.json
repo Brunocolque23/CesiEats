@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\frontend",
+    "\\frontend\\src"
   ],
+  "SelectedNode": "\\Livreur",
   "PreviewInSolutionExplorer": false
 }
