@@ -30,16 +30,23 @@ const LoginPopup = ({ setShowLogin }) => {
         } else {
             new_url += "/api/user/register";
         }
-    
+
         try {
             const response = await axios.post(new_url, data);
+            console.log('Response Data:', response.data);
             if (response.data.success) {
                 setToken(response.data.token);
                 localStorage.setItem("token", response.data.token);
-                localStorage.setItem("role", response.data.role);  // Guardar el rol aquí
+                localStorage.setItem("role", response.data.role);
+                localStorage.setItem("restaurantname", response.data.name);
+                localStorage.setItem("email", data.email);  // Guarda el email del formulario
+
+                // Añade el email al response.data
+                const updatedResponseData = { ...response.data, email: data.email };
+                
                 loadCartData({ token: response.data.token });
                 setShowLogin(false);
-                const userRole = response.data.role;
+                toast.success(`Response Data: ${JSON.stringify(updatedResponseData, null, 2)}`);
 
             } else {
                 toast.error(response.data.message);
@@ -50,9 +57,6 @@ const LoginPopup = ({ setShowLogin }) => {
         }
         window.location.reload();
     }
-    
-    
-    
 
     const onForgotPassword = async () => {
         if (!data.email) {
@@ -94,7 +98,7 @@ const LoginPopup = ({ setShowLogin }) => {
                             </select>
                         </>
                     }
-                    <input name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Your email' />
+                    <input name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='Your email' required />
                     <input name='password' onChange={onChangeHandler} value={data.password} type="password" placeholder='Password' required />
                 </div>
                 <button>{currState === "Login" ? "Login" : "Create account"}</button>

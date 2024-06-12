@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\frontend",
+    "\\frontend\\src"
   ],
-  "SelectedNode": "\\C:\\Users\\bruno\\Source\\Repos\\CesiEats",
+  "SelectedNode": "\\Livreur",
   "PreviewInSolutionExplorer": false
 }

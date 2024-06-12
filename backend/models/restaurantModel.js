@@ -5,7 +5,8 @@ const restaurantSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: false },
     localisation: { type: String, required: false },
-    phone:{type:Object,default:{}}
+    image: { type: String, required: false },
+    phone:{type:String,default:"3746379"}
 }, { minimize: false })
 
 const restaurantModel = mongoose.models.restaurant || mongoose.model("restaurant", restaurantSchema);

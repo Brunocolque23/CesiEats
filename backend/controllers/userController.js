@@ -2,9 +2,11 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
+import restaurantModel from "../models/restaurantModel.js";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { ToastContainer, toast } from 'react-toastify'; // Importa 'toast'
 
 dotenv.config();
 
@@ -30,7 +32,8 @@ const loginUser = async (req, res) => {
         }
         
         const token = createToken(user._id);
-        res.json({success: true, token, role: user.role});
+        toast.success(user.role);
+        res.json({success: true, token, role: user.role, email: user.email});
     } catch (error) {
         console.log(error);
         res.json({success: false, message: "Error"});
@@ -59,8 +62,29 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // Create new user
         const newUser = new userModel({name, email, password: hashedPassword, role});
         const user = await newUser.save();
+        
+        //console.log(name);
+        //console.log(email);
+        
+        // If role is "restaurateur", create new restaurant for the user
+        if (role === "restaurateur") {
+            
+            const newRestaurant = new restaurantModel({ name: `${name}'s Restaurant`, email,password });
+            await newRestaurant.save();
+            //console.log(role);
+            
+        }
+        if (role === "livreur") {
+            const newLivreur = new livreurModel({ name: name, email,password });
+            await newLivreur.save();
+            //console.log(role);
+            
+        }
+        
+
         const token = createToken(user._id);
         res.json({success: true, token, role: user.role});
 

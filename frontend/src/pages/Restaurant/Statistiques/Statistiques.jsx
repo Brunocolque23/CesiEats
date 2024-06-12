@@ -22,16 +22,16 @@ const Statistiques = () => {
   const [selectedState, setSelectedState] = useState('All'); // Estado para el estado seleccionado
 
   const fetchAllOrders = async () => {
-    try {
-      const response = await axios.get(`${url}/api/order/list2`);
-      if (response.data.success) {
-        setOrders(response.data.data.reverse());
-      } else {
-        toast.error("Error");
-      }
-    } catch (error) {
-      toast.error("Error fetching orders");
-      console.error(error);
+    const restaurantname = localStorage.getItem('restaurantname');
+    //toast.error(restaurantname);
+    const response = await axios.get(`${url}/api/order/list2`, {
+      params: { restaurantname }
+    });
+
+    if (response.data.success) {
+      setOrders(response.data.data.reverse());
+    } else {
+      toast.error("Error");
     }
   };
 

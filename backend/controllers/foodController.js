@@ -2,16 +2,20 @@ import foodModel from "../models/foodModel.js";
 import fs from 'fs'
 
 // all food list
+// all food list
 const listFood = async (req, res) => {
+    const { name } = req.query; // obtener el email de la consulta
+
     try {
-        const foods = await foodModel.find({})
-        res.json({ success: true, data: foods })
+        const filter = name ? { restaurant: name } : {}; // si hay email, filtrar por restaurante
+        const foods = await foodModel.find(filter);
+        res.json({ success: true, data: foods });
     } catch (error) {
         console.log(error);
-        res.json({ success: false, message: "Error" })
+        res.json({ success: false, message: "Error" });
     }
-
 }
+
 
 // add food
 const addFood = async (req, res) => {
@@ -23,6 +27,7 @@ const addFood = async (req, res) => {
         description: req.body.description,
         price: req.body.price,
         category:req.body.category,
+        restaurant: req.body.restaurant,
         image: image_filename,
     })
     try {
