@@ -36,7 +36,9 @@ const LoginPopup = ({ setShowLogin }) => {
             if (response.data.success) {
                 setToken(response.data.token);
                 localStorage.setItem("token", response.data.token);
-                localStorage.setItem("role", response.data.role);  // Guardar el rol aquí
+                localStorage.setItem("role", response.data.role);
+                localStorage.setItem("email", response.data.email);
+                toast.success(response.data.email);
                 loadCartData({ token: response.data.token });
                 setShowLogin(false);
                 const userRole = response.data.role;

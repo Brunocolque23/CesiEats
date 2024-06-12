@@ -1,5 +1,5 @@
 import express from 'express';
-import { addrestaurant, listrestaurant, removerestaurant, updaterestaurant, findRestaurantByName, getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct, getTotalItems, getOrdersPerState } from '../controllers/restaurantController.js';
+import { addrestaurant, listrestaurant, removerestaurant, upgradeRestaurant, findRestaurantByName, getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct, getTotalItems, getOrdersPerState } from '../controllers/restaurantController.js';
 import multer from 'multer';
 
 const restaurantRouter = express.Router();
@@ -17,7 +17,18 @@ const upload = multer({ storage: storage });
 restaurantRouter.get("/list", listrestaurant);
 restaurantRouter.post("/add", addrestaurant);
 restaurantRouter.post("/remove", removerestaurant);
-restaurantRouter.post("/update", updaterestaurant);
+restaurantRouter.put('/upgrade/:id', async (req, res) => {
+    const id = req.params.id;
+    const newData = req.body;
+
+    try {
+        const result = await upgradeRestaurant(id, newData);
+        res.json(result);
+    } catch (error) {
+        console.error("Error updating restaurant:", error);
+        res.status(500).json({ success: false, message: "Error updating restaurant" });
+    }
+});
 restaurantRouter.post("/findByName", findRestaurantByName);
 
 // Ruta para obtener las estadísticas de pedidos

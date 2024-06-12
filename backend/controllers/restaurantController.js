@@ -15,49 +15,51 @@ const listrestaurant = async (req, res) => {
 
 }
 
-const updaterestaurant = async (req, res) => {
-    const { id, name, localisation, phone, email, password } = req.body;
-
+const upgradeRestaurant = async (id, newData) => {
     try {
         const restaurant = await restaurantModel.findById(id);
 
         if (!restaurant) {
-            return res.json({ success: false, message: "Restaurant not found" });
+            throw new Error("Restaurant not found");
         }
 
-        restaurant.name = name || restaurant.name;
-        restaurant.localisation = localisation || restaurant.localisation;
-        restaurant.phone = phone || restaurant.phone;
-        restaurant.email = email || restaurant.email;
-        restaurant.password = password || restaurant.password;
+        // Actualizar los campos que se proporcionan en newData
+        Object.keys(newData).forEach(key => {
+            restaurant[key] = newData[key];
+        });
 
+        // Guardar los cambios
         await restaurant.save();
-        res.json({ success: true, message: "Restaurant Updated" });
+        
+        return { success: true, message: "Restaurant updated successfully" };
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error" });
+        console.error("Error upgrading restaurant:", error);
+        return { success: false, message: error.message };
     }
 };
+
 // add food
+// En tu controlador
 const addrestaurant = async (req, res) => {
-
-    const {name, localisation, phone,email,password} = req.body;
-
-    const restaurant = new restaurantModel({
-        name: req.body.name,
-        localisation: req.body.localisation,
-        phone: req.body.phone,
-        email:req.body.email,
-        password: req.body.password,
-    })
+    const { name = "newrestaurante", email, localisation, phone } = req.body;
     try {
-        await restaurant.save();
-        res.json({ success: true, message: "restaurant Added" })
+        // Verificar si el restaurante ya existe
+        const existingRestaurant = await RestaurantModel.findOne({ email });
+        if (existingRestaurant) {
+            return res.status(400).json({ success: false, message: "Restaurant already exists" });
+        }
+
+        // Crear el nuevo restaurante
+        const newRestaurant = new RestaurantModel({ name, email, localisation, phone });
+        await newRestaurant.save();
+
+        res.status(201).json({ success: true, message: "Restaurant created successfully" });
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: "Error" })
+        console.error("Error adding restaurant:", error);
+        res.status(500).json({ success: false, message: "Error adding restaurant" });
     }
-}
+};
+
 
 // delete restaurant
 const removerestaurant = async (req, res) => {
@@ -74,10 +76,10 @@ const removerestaurant = async (req, res) => {
 }
 
 const findRestaurantByName = async (req, res) => {
-    const { name } = req.body;
+    const { email } = req.body;
 
     try {
-        const restaurant = await restaurantModel.findOne({ name });
+        const restaurant = await restaurantModel.findOne({ email });
 
         if (!restaurant) {
             return res.json({ success: false, message: "Restaurant not found" });
@@ -318,4 +320,4 @@ const getOrdersPerState = async (req, res) => {
 
 
 
-export { listrestaurant, addrestaurant, removerestaurant,updaterestaurant, findRestaurantByName,getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct,getTotalItems, getOrdersPerState }
+export { listrestaurant, addrestaurant, removerestaurant,upgradeRestaurant, findRestaurantByName,getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct,getTotalItems, getOrdersPerState }

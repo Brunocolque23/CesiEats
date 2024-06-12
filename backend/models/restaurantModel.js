@@ -5,6 +5,7 @@ const restaurantSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: false },
     localisation: { type: String, required: false },
+    image: { type: String, required: true },
     phone:{type:Object,default:{}}
 }, { minimize: false })
 

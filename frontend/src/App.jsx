@@ -53,13 +53,13 @@ const App = () => {
 
     useEffect(() => {
         const userRole = localStorage.getItem('role');
+        
         console.log("Role:", userRole);
         setRole(userRole);
+        
 
         // Muestra un mensaje de alerta con el rol del usuario
-        if (userRole) {
-            
-        }
+
     }, []);
 
     return (
