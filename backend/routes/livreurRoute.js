@@ -1,5 +1,5 @@
 import express from 'express';
-import { addlivreur, listlivreur, removelivreur, updatelivreur, findlivreurByName, getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct, getTotalItems, getOrdersPerState } from '../controllers/livreurController.js';
+import { addlivreur, listlivreur, removelivreur, updatelivreur, findlivreurByName, getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct, getTotalItems, getOrdersPerState, upgradeLivreur } from '../controllers/livreurController.js';
 import multer from 'multer';
 
 const livreurRouter = express.Router();
@@ -8,7 +8,7 @@ const livreurRouter = express.Router();
 const storage = multer.diskStorage({
     destination: 'uploads',
     filename: (req, file, cb) => {
-        return cb(null,`${Date.now()}${file.originalname}`);
+        return cb(null, `${Date.now()}${file.originalname}`);
     }
 });
 
@@ -24,9 +24,7 @@ livreurRouter.post("/findByName", findlivreurByName);
 livreurRouter.get("/statsOrder", async (req, res) => {
     try {
         const { startDate, endDate, product } = req.query;
-        // Obtener el total de pedidos llamando a la función getTotalOrders con los filtros de fecha y producto
         const totalOrders = await getTotalOrders(startDate, endDate, product);
-
         res.json({ success: true, totalOrders });
     } catch (error) {
         console.log(error);
@@ -38,9 +36,7 @@ livreurRouter.get("/statsOrder", async (req, res) => {
 livreurRouter.get("/statsEarning", async (req, res) => {
     try {
         const { startDate, endDate, product } = req.query;
-        // Obtener las ganancias totales llamando a la función getTotalEarnings con los filtros de fecha y producto
         const totalEarnings = await getTotalEarnings(startDate, endDate, product);
-
         res.json({ success: true, totalEarnings });
     } catch (error) {
         console.log(error);
@@ -52,9 +48,7 @@ livreurRouter.get("/statsEarning", async (req, res) => {
 livreurRouter.get("/statsTotalItems", async (req, res) => {
     try {
         const { startDate, endDate, product } = req.query;
-        // Obtener el total de ítems llamando a la función getTotalItems con los filtros de fecha y producto
         const totalItems = await getTotalItems(startDate, endDate, product);
-
         res.json({ success: true, totalItems });
     } catch (error) {
         console.log(error);
@@ -65,5 +59,24 @@ livreurRouter.get("/statsTotalItems", async (req, res) => {
 livreurRouter.get("/ordersPerDay", getOrdersPerDay);
 livreurRouter.get("/ordersPerProduct", getOrdersPerProduct);
 livreurRouter.get("/ordersPerState", getOrdersPerState);
+
+// Ruta para actualizar el livreur por ID
+livreurRouter.put('/upgrade/:id', upload.single('image'), async (req, res) => {
+    const id = req.params.id;
+    const newData = req.body;
+
+    // Agregar el campo de la imagen si se está subiendo una nueva
+    if (req.file) {
+        newData.image = req.file.filename;
+    }
+
+    try {
+        const result = await upgradeLivreur(id, newData);
+        res.json(result);
+    } catch (error) {
+        console.error("Error updating livreur:", error);
+        res.status(500).json({ success: false, message: "Error updating livreur" });
+    }
+});
 
 export default livreurRouter;

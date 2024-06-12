@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
+import livreurModel from "../models/livreurModel.js";
 import restaurantModel from "../models/restaurantModel.js";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';

@@ -68,7 +68,7 @@ const App = () => {
             {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
             <div className='app'>
                 <Navbar setShowLogin={setShowLogin} />
-                {role !== 'restaurateur' && role !== 'deliverer' && role !== 'servicetechnique' && role !== 'serviceCommercial' &&<Routes>
+                {role !== 'restaurateur' && role !== 'livreur' && role !== 'servicetechnique' && role !== 'serviceCommercial' &&<Routes>
                     <Route path='/' element={<Home />} />
                     <Route path='/cart' element={<Cart />} />
                     <Route path='/order' element={<PlaceOrder />} />
@@ -95,12 +95,12 @@ const App = () => {
                     </Routes>}
                 </div>
             </div>}
-            {role === 'deliverer' && <div className='app2'>
+            {role === 'livreur' && <div className='app2'>
             <Navbar3 />
                 <hr />
                 <div className="app-content">
-                    {role === 'deliverer' && <Sidebar3 />}
-                    {role === 'deliverer' && <Routes>
+                    {role === 'livreur' && <Sidebar3 />}
+                    {role === 'livreur' && <Routes>
                         <Route path="/profile" element={<Profile3 />} />
                         <Route path="/accept" element={<Accept3 />} />
                         <Route path="/orders" element={<Orders3 />} />
