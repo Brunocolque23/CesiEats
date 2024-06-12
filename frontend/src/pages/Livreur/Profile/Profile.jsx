@@ -40,6 +40,7 @@ const Profile = () => {
                         image: livreurData.image // Actualiza el estado de la imagen
                     }));
                     localStorage.setItem("livreurname", livreurData.name);
+                    localStorage.setItem("livreurid", livreurData._id);
                 } else {
                     toast.error(response.data.message);
                 }

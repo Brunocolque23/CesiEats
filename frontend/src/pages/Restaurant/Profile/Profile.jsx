@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
-import { url } from '../../../assets/assets';
 import axios from 'axios';
+import { assets, url } from '../../../assets/assets';
 import { toast } from 'react-toastify';
+import defaultImage from './defaultImage.png'; // Importa una imagen por defecto
 
 const Profile = () => {
     const [data, setData] = useState({
@@ -15,8 +16,11 @@ const Profile = () => {
         newName: "",
         newPassword: "",
         newEmail: "",
-        newAddress: ""
+        newAddress: "",
+        image: "" // Agrega el estado para la imagen
     });
+
+    const [image, setImage] = useState(null);
 
     useEffect(() => {
         const fetchRestaurantData = async () => {
@@ -32,7 +36,8 @@ const Profile = () => {
                         email: restaurantData.email,
                         password: restaurantData.password,
                         localisation: restaurantData.localisation,
-                        phone: restaurantData.phone
+                        phone: restaurantData.phone,
+                        image: restaurantData.image // Actualiza el estado de la imagen
                     }));
                     localStorage.setItem("restaurantname", restaurantData.name);
                 } else {
@@ -47,48 +52,42 @@ const Profile = () => {
         fetchRestaurantData();
     }, []);
 
+    useEffect(() => {
+        // Si la imagen ya está cargada, muéstrala
+        if (data.image) {
+            setImage(data.image);
+        }
+    }, [data.image]);
+
     const onChangeHandler = (event) => {
         const name = event.target.name;
         const value = event.target.value;
         setData(prevData => ({ ...prevData, [name]: value }));
     };
 
-    const handleDeleteClick = () => {
-        const confirmation = window.confirm("Are you sure?");
-        if (confirmation) {
-            alert("Deleted!");
-        } else {
-            alert("Not deleted!");
-        }
+    const handleImageChange = (event) => {
+        setImage(event.target.files[0]);
     };
 
     const handleUpdateClick = async () => {
-        const { id, newName, newPassword, newEmail, newAddress, phone } = data;
-    
-        const updatePayload = {
-            id,
-            name: newName || data.name,
-            password: newPassword || data.password,
-            email: newEmail || data.email,
-            localisation: newAddress || data.localisation,
-            phone: phone
-        };
-    
+        const formData = new FormData();
+        formData.append("name", data.newName || data.name);
+        formData.append("password", data.newPassword || data.password);
+        formData.append("email", data.newEmail || data.email);
+        formData.append("localisation", data.newAddress || data.localisation);
+        formData.append("phone", data.phone);
+        formData.append("image", image);
+        
         try {
-            console.log("Sending update request with payload:", updatePayload);
-    
-            const response = await axios.put(`${url}/api/restaurant/upgrade/${id}`, updatePayload);
-    
-            console.log("Response from server:", response.data);
-    
+            const response = await axios.put(`${url}/api/restaurant/upgrade/${data.id}`, formData);
             if (response.data.success) {
                 toast.success("Restaurant Updated Successfully!");
                 setData(prevData => ({
                     ...prevData,
-                    name: newName || prevData.name,
-                    password: newPassword || prevData.password,
-                    email: newEmail || prevData.email,
-                    localisation: newAddress || prevData.localisation,
+                    name: data.newName || prevData.name,
+                    password: data.newPassword || prevData.password,
+                    email: data.newEmail || prevData.email,
+                    localisation: data.newAddress || prevData.localisation,
                     newName: "",
                     newPassword: "",
                     newEmail: "",
@@ -102,7 +101,6 @@ const Profile = () => {
             toast.error(error.message);
         }
     };
-    
 
     return (
         <div className='profile'>
@@ -110,8 +108,16 @@ const Profile = () => {
                 <div className='profile-img-upload flex-col'>
                     <p>Logo</p>
                     <label htmlFor="image">
-                        <img src="/src/assets/Bembos.png" alt="" />
-                    </label>    
+                        {/* Verifica si hay una imagen en los datos */}
+                        {image ? (
+                            // Muestra la imagen del restaurante si está disponible
+                            <img src={`http://localhost:4000/images/${image}`} alt="Restaurant Logo" />
+                        ) : (
+                            // Si no hay imagen, muestra una imagen por defecto
+                            <img src={defaultImage} alt="Default Logo" />
+                        )}
+                    </label>
+                    <input type="file" id="image" accept="image/*" onChange={handleImageChange} />
                 </div>
                 <div className='profile-product-name flex-col'>
                     <p>Restaurant Name</p>
@@ -122,37 +128,31 @@ const Profile = () => {
                     <div className="profile-section">
                         <div className='profile-product-name flex-col'>
                             <p>Name</p>
-                            <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='Bembos' required disabled />
                             <input name='newName' onChange={onChangeHandler} value={data.newName} type="text" placeholder='Enter new name' />
                         </div>
                     </div>
                     <div className="profile-section">
                         <div className='profile-product-name flex-col text-center'>
                             <p>Password</p>
-                            <input name='password' onChange={onChangeHandler} value={data.password} type="password" placeholder='Enter current password' required />
                             <input name='newPassword' onChange={onChangeHandler} value={data.newPassword} type="password" placeholder='Enter new password' />
                         </div>
                     </div>
                     <div className="profile-section text-right">
                         <div className='profile-product-name flex-col'>
                             <p>Email</p>
-                            <input name='email' onChange={onChangeHandler} value={data.email} type="email" placeholder='bruno@viacesi.fr' required disabled />
                             <input name='newEmail' onChange={onChangeHandler} value={data.newEmail} type="email" placeholder='Enter new email' />
                         </div>
                     </div>
                     <div className="profile-section text-right">
                         <div className='profile-product-name flex-col'>
                             <p>Address</p>
-                            <input name='localisation' onChange={onChangeHandler} value={data.localisation} type="text" placeholder='1 Av Jacques Chirac' required disabled />
                             <input name='newAddress' onChange={onChangeHandler} value={data.newAddress} type="text" placeholder='Enter new address' />
                         </div>
                     </div>
                 </div>
 
                 <div className="button-container">
-                    <button type="submit" className="btn btn-primary profile-btn">PROFILE</button>
                     <button type="button" className="btn btn-secondary profile-btn" onClick={handleUpdateClick}>UPDATE</button>
-                    <button type="button" className="btn btn-danger profile-btn" onClick={handleDeleteClick}>DELETE</button>
                 </div>
             </form>
         </div>
