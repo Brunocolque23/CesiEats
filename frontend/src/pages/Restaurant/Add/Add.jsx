@@ -24,7 +24,7 @@ const Add = () => {
         formData.append("price", Number(data.price));
         formData.append("category", data.category);
         formData.append("image", image);
-        formData.append("restaurant", data.restaurant);
+        formData.append("restaurant", restaurantname);
         const response = await axios.post(`${url}/api/food/add`, formData);
         if (response.data.success) {
             toast.success(response.data.message)
@@ -40,12 +40,14 @@ const Add = () => {
         else{
             toast.error(response.data.message)
         }
+        window.location.reload();
     }
 
     const onChangeHandler = (event) => {
         const name = event.target.name;
         const value = event.target.value;
-        setData(data => ({ ...data, [name]: value }))
+        setData(data => ({ ...data, [name]: value }));
+        //window.location.reload();
     }
 
     return (

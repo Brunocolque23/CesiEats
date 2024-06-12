@@ -74,10 +74,10 @@ const removelivreur = async (req, res) => {
 }
 
 const findlivreurByName = async (req, res) => {
-    const { name } = req.body;
+    const { email } = req.body;
 
     try {
-        const livreur = await livreurModel.findOne({ name });
+        const livreur = await livreurModel.findOne({ email });
 
         if (!livreur) {
             return res.json({ success: false, message: "livreur not found" });
@@ -315,7 +315,28 @@ const getOrdersPerState = async (req, res) => {
     }
   }
   
+  const upgradeLivreur = async (id, newData) => {
+    try {
+        const livreur = await livreurModel.findById(id);
+
+        if (!livreur) {
+            throw new Error("Livreur not found");
+        }
+
+        // Actualizar los campos que se proporcionan en newData
+        Object.keys(newData).forEach(key => {
+            livreur[key] = newData[key];
+        });
+
+        // Guardar los cambios
+        await livreur.save();
+        
+        return { success: true, message: "Livreur updated successfully" };
+    } catch (error) {
+        console.error("Error upgrading livreur:", error);
+        return { success: false, message: error.message };
+    }
+}
 
 
-
-export { listlivreur, addlivreur, removelivreur,updatelivreur, findlivreurByName,getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct,getTotalItems, getOrdersPerState }
+export { listlivreur, addlivreur, removelivreur,updatelivreur, findlivreurByName,getTotalOrders, getTotalEarnings, getOrdersPerDay, getOrdersPerProduct,getTotalItems, getOrdersPerState, upgradeLivreur }
