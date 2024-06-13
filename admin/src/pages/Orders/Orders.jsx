@@ -12,7 +12,7 @@ const Order = () => {
     const response = await axios.get(`${url}/api/order/list`)
     if (response.data.success) {
       setOrders(response.data.data.reverse());
-      console.log(response.data.data);
+      //console.log(response.data.data);
     }
     else {
       toast.error("Error")
@@ -20,7 +20,7 @@ const Order = () => {
   }
 
   const statusHandler = async (event,orderId) => {
-    console.log(event,orderId);
+    //console.log(event,orderId);
     const response = await axios.post(`${url}/api/order/status`,{
       orderId,
       status:event.target.value

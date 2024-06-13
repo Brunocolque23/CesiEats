@@ -41,6 +41,8 @@ const Profile = () => {
                     }));
                     localStorage.setItem("livreurname", livreurData.name);
                     localStorage.setItem("livreurid", livreurData._id);
+                    const livreurid = localStorage.getItem("livreurid");
+                    //toast.error(livreurid);
                 } else {
                     toast.error(response.data.message);
                 }

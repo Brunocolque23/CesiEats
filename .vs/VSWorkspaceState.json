@@ -1,10 +1,6 @@
 {
   "ExpandedNodes": [
-    "\\frontend",
-    "\\frontend\\src",
-    "\\frontend\\src\\pages",
-    "\\frontend\\src\\pages\\Restaurant",
-    "\\frontend\\src\\pages\\Restaurant\\Profile"
+    "\\frontend"
   ],
   "PreviewInSolutionExplorer": false
 }
