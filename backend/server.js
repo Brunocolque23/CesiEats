@@ -11,6 +11,8 @@ import restaurantRouter from "./routes/restaurantRoute.js"
 import livreurRouter from "./routes/livreurRoute.js"
 import developRouter from "./routes/developRoute.js"
 import apiRouter from "./routes/apiRoute.js"
+
+import servicetechniqueRouter from "./routes/servicetechniqueRoute.js"
 import dotenv from 'dotenv';
 dotenv.config();
 // app config
@@ -34,6 +36,7 @@ app.use("/api/order",orderRouter)
 app.use("/api/restaurant",restaurantRouter)
 app.use("/api/livreur",livreurRouter)
 app.use("/api/develop",developRouter)
+app.use("/api/servicetechnique",servicetechniqueRouter)
 app.use("/api/apis",apiRouter)
 
 app.get("/", (req, res) => {

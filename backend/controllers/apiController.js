@@ -31,27 +31,61 @@ const createApi = async (req, res) => {
 
 // Controlador para actualizar un registro existente
 const updateApi = async (req, res) => {
-    const { id } = req.params;
+    console.log("Inicio de la función updateApi");
+    const { id } = req.params.id;
+    console.log(`ID recibido desde params: ${id}`);
     const { name, secretKey, iddevelop } = req.body;
-  
+    console.log(`Datos recibidos en el cuerpo del request: name=${name}, secretKey=${secretKey}, iddevelop=${iddevelop}`);
+
     try {
-      const api = await apiModel.findById(id);
-  
-      if (!api) {
-        return res.status(404).json({ success: false, message: 'API not found' });
-      }
-  
-      api.name = name || api.name;
-      api.secretKey = secretKey || api.secretKey;
-      api.iddevelop = iddevelop || api.iddevelop;
-  
-      await api.save();
-      res.status(200).json({ success: true, message: 'API updated successfully' });
+        const api = await apiModel.findById(id);
+        console.log(`API encontrada en la base de datos: ${api}`);
+
+        if (!api) {
+            console.log("API no encontrada, enviando respuesta 404");
+            return res.status(404).json({ success: false, message: 'API not found' });
+        }
+
+        console.log("Actualizando propiedades de la API...");
+        api.name = name || api.name;
+        api.secretKey = secretKey || api.secretKey;
+        api.iddevelop = iddevelop || api.iddevelop;
+
+        console.log("Guardando cambios en la base de datos...");
+        await api.save();
+
+        console.log("API actualizada exitosamente, enviando respuesta 200");
+        res.status(200).json({ success: true, message: 'API updated successfully' });
     } catch (error) {
-      console.error('Error updating API:', error);
-      res.status(500).json({ success: false, message: error.message });
+        console.error('Error actualizando la API:', error);
+        res.status(500).json({ success: false, message: error.message });
     }
-  };
+};
+
+const upgraapi = async (id, newData) => {
+    try {
+        const api = await apiModel.findById(id);
+
+        if (!api) {
+            throw new Error("api not found");
+        }
+
+        // Actualizar los campos que se proporcionan en newData
+        Object.keys(newData).forEach(key => {
+            api[key] = newData[key];
+        });
+        
+
+        // Guardar los cambios
+        await api.save();
+        
+        return { success: true, message: "api updated successfully" };
+    } catch (error) {
+        console.error("Error upgrading api:", error);
+        return { success: false, message: error.message };
+    }
+};
+
 // Controlador para eliminar un registro
 const deleteApi = async (req, res) => {
     const { id } = req.params;
@@ -64,4 +98,4 @@ const deleteApi = async (req, res) => {
 };
 
 
-export { getAllApis, createApi, updateApi, deleteApi };
+export { getAllApis, createApi, updateApi, deleteApi,upgraapi };

@@ -13,13 +13,15 @@ const Order = () => {
     try {
       const response = await axios.get(`${url}/api/order/list3`);
       const livreurid = localStorage.getItem("livreurid");
+      
       if (response.data.success) {
         const allOrders = response.data.data.reverse();
-        const filteredOrders = allOrders.filter(order => order.livreurid === livreurid);
+        const filteredOrders = allOrders.filter(order => order.livreurid === livreurid || order.livreurid === "false");
         setOrders(filteredOrders);
       } else {
         toast.error("Error");
       }
+      
     } catch (error) {
       toast.error('Error fetching orders');
       console.error(error);

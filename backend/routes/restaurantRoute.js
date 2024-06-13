@@ -53,6 +53,34 @@ restaurantRouter.get("/statsOrder", async (req, res) => {
     }
 });
 
+// Ruta para obtener las estadísticas de ingresos filtrados por fecha y producto
+restaurantRouter.get("/statsEarning", async (req, res) => {
+    try {
+    const { startDate, endDate, product } = req.query;
+    // Obtener las ganancias totales llamando a la función getTotalEarnings con los filtros de fecha y producto
+    const totalEarnings = await getTotalEarnings(startDate, endDate, product);
+    res.json({ success: true, totalEarnings });
+} catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error al obtener las estadísticas de ingresos" });
+}
+});
+// Ruta para obtener las estadísticas de ítems totales filtrados por fecha y producto
+restaurantRouter.get("/statsTotalItems", async (req, res) => {
+    try {
+    const { startDate, endDate, product } = req.query;
+    // Obtener el total de ítems llamando a la función getTotalItems con los filtros de fecha y producto
+    const totalItems = await getTotalItems(startDate, endDate, product);
+    res.json({ success: true, totalItems });
+} catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Error al obtener las estadísticas de ítems totales" });
+}
+});
+
+restaurantRouter.get("/ordersPerDay", getOrdersPerDay);
+restaurantRouter.get("/ordersPerProduct", getOrdersPerProduct);
+restaurantRouter.get("/ordersPerState", getOrdersPerState);
 // Resto del código para las otras rutas...
 
 export default restaurantRouter;

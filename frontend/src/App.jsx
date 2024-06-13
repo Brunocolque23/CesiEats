@@ -42,7 +42,7 @@ import Orders4 from './pages/ServiceCommercial/Orders/Orders';
 ////Service Technique
 import Navbar5 from './components/ServiceTechnique/Navbar/Navbar';
 import Sidebar5 from './components/ServiceTechnique/Sidebar/Sidebar';
-import Add5 from './pages/ServiceTechnique/Add/Add';
+import Profile5 from './pages/ServiceTechnique/Profile/Profile';
 import List5 from './pages/ServiceTechnique/List/List';
 import Orders5 from './pages/ServiceTechnique/Orders/Orders';
 ////Developeur Tiers
@@ -51,6 +51,7 @@ import Sidebar6 from './components/DeveloppeurTiers/Sidebar/Sidebar';
 import Profile6 from './pages/DeveloppeurTiers/Profile/Profile';
 import Add6 from './pages/DeveloppeurTiers/Add/Add';
 import List6 from './pages/DeveloppeurTiers/List/List';
+import Download6 from './pages/DeveloppeurTiers/Download/Download';
 
 const App = () => {
     const [showLogin, setShowLogin] = useState(false);
@@ -116,26 +117,26 @@ const App = () => {
                 </div>
             </div>}
             {role === 'servicetechnique' && <div className='app2'>
-                <Navbar4 />
+                <Navbar5 />
                 <hr />
                 <div className="app-content">
-                    {role === 'servicetechnique' && <Sidebar4 />}
+                    {role === 'servicetechnique' && <Sidebar5 />}
                     {role === 'servicetechnique' && <Routes>
-                        <Route path="/add" element={<Add4/>}/>
-                        <Route path="/list" element={<List4/>}/>
-                        <Route path="/orders" element={<Orders4/>}/>
+                        <Route path="/add" element={<Profile5/>}/>
+                        <Route path="/list" element={<List5/>}/>
+                        <Route path="/orders" element={<Orders5/>}/>
                     </Routes>}
                 </div>
             </div>}
             {role === 'serviceCommercial' && <div className='app2'>
-                <Navbar5 />
+                <Navbar4 />
                 <hr />
                 <div className="app-content">
-                    {role === 'serviceCommercial' && <Sidebar5 />}
+                    {role === 'serviceCommercial' && <Sidebar4 />}
                     {role === 'serviceCommercial' && <Routes>
-                        <Route path="/add" element={<Add5/>}/>
-                        <Route path="/list" element={<List5/>}/>
-                        <Route path="/orders" element={<Orders5/>}/>
+                        <Route path="/add" element={<Add4/>}/>
+                        <Route path="/list" element={<List4/>}/>
+                        <Route path="/orders" element={<Orders4/>}/>
                     </Routes>}
                 </div>
             </div>}
@@ -148,6 +149,7 @@ const App = () => {
                         <Route path="/profile" element={<Profile6/>}/>
                         <Route path="/add" element={<Add6/>}/>
                         <Route path="/list" element={<List6/>}/>
+                        <Route path="/download" element={<Download6/>}/>
                     </Routes>}
                 </div>
             </div>}
