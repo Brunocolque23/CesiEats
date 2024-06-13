@@ -1,9 +1,19 @@
 import express from 'express';
-import { listAPI } from '../controllers/apiController.js';
+import { getAllApis, createApi, updateApi, deleteApi } from '../controllers/apiController.js';
 import authMiddleware from '../middleware/auth.js';
 
-const apiRouter = express.Router();
+const apirouter = express.Router();
 
-apiRouter.post("/listAPI",listAPI);
+// Ruta para obtener todos los registros de API
+apirouter.get('/getall', getAllApis);
 
-export default apiRouter;
+// Ruta para crear un nuevo registro de API
+apirouter.post('/createapis', createApi);
+
+// Ruta para actualizar un registro de API por su ID
+apirouter.patch('/updateapis/:id', updateApi);
+
+// Ruta para eliminar un registro de API por su ID
+apirouter.delete('/deleteapis/:id', deleteApi);
+
+export default apirouter;
