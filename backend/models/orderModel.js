@@ -17,6 +17,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {type:String,default:"Waiting Accept"},
     date: {type:Date,default:Date.now()},
+    livreurid: {type:String,default:false},
     payment:{type:Boolean,default:false}
 })
 
