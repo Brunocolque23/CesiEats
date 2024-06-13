@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import validator from "validator";
 import userModel from "../models/userModel.js";
 import livreurModel from "../models/livreurModel.js";
+import developModel from "../models/developModel.js";
 import restaurantModel from "../models/restaurantModel.js";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
@@ -81,6 +82,12 @@ const registerUser = async (req, res) => {
         if (role === "livreur") {
             const newLivreur = new livreurModel({ name: name, email,password });
             await newLivreur.save();
+            //console.log(role);
+            
+        }
+        if (role === "developtiers") {
+            const newDevelop = new developModel({ name: name, email,password });
+            await newDevelop.save();
             //console.log(role);
             
         }

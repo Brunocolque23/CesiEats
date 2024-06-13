@@ -1,35 +1,45 @@
-.add{
-    width: 70%;
-    margin-left: max(5vw,25px);
-    margin-top: 50px;
-    color: #6D6D6D;
-    font-size: 16px;
-}
-.add form{
-   gap: 20px;
-}
-.add-img-upload img{
-    width: 120px;
-}
-.add-product-name, .add-product-description{
-    width: max(40%,280px);
-}
-.add-product-name input ,.add-product-description textarea{
-    padding: 10px 10px;
-}
-.add-category-price{
+.api-management-container {
     display: flex;
-    gap: 30px;
+    gap: 20px; /* Espacio entre los contenedores */
+    padding: 20px; /* Espaciado interno */
 }
-.add-category-price select,.add-category-price input{
-    max-width: 120px;
-    padding: 10px;
+
+.api-list-container {
+    flex: 1; /* Ocupa el espacio restante */
+    border: 2px solid black; /* Borde negro */
+    padding: 10px; /* Espaciado interno */
+    background-color: #f0f0f0; /* Color de fondo */
 }
-.add-btn{
-    max-width: 120px;
-    border: none;
-    padding: 10px;
-    background-color: black;
-    color: white;
+
+.api-details-container {
+    flex: 1; /* Ocupa el espacio restante */
+}
+
+/* Estilos para los elementos dentro de la lista de APIs */
+.api-list-container h2 {
+    margin-bottom: 10px;
+}
+
+.api-list-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.api-list-container li {
     cursor: pointer;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between; /* Distribuye los elementos en la lista */
+}
+
+.api-list-container li:hover {
+    background-color: #e0e0e0;
+}
+
+.api-list-container li .secret-key {
+    font-size: 0.9em; /* Tamaño de fuente más pequeño para el secret key */
+    color: #666666; /* Color de texto para el secret key */
 }

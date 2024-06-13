@@ -45,7 +45,12 @@ import Sidebar5 from './components/ServiceTechnique/Sidebar/Sidebar';
 import Add5 from './pages/ServiceTechnique/Add/Add';
 import List5 from './pages/ServiceTechnique/List/List';
 import Orders5 from './pages/ServiceTechnique/Orders/Orders';
-
+////Developeur Tiers
+import Navbar6 from './components/DeveloppeurTiers/Navbar/Navbar';
+import Sidebar6 from './components/DeveloppeurTiers/Sidebar/Sidebar';
+import Profile6 from './pages/DeveloppeurTiers/Profile/Profile';
+import Add6 from './pages/DeveloppeurTiers/Add/Add';
+import List6 from './pages/DeveloppeurTiers/List/List';
 
 const App = () => {
     const [showLogin, setShowLogin] = useState(false);
@@ -68,7 +73,7 @@ const App = () => {
             {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
             <div className='app'>
                 <Navbar setShowLogin={setShowLogin} />
-                {role !== 'restaurateur' && role !== 'livreur' && role !== 'servicetechnique' && role !== 'serviceCommercial' &&<Routes>
+                {role !== 'restaurateur' && role !== 'livreur' && role !== 'servicetechnique' && role !== 'serviceCommercial' && role !== 'developtiers' &&<Routes>
                     <Route path='/' element={<Home />} />
                     <Route path='/cart' element={<Cart />} />
                     <Route path='/order' element={<PlaceOrder />} />
@@ -131,6 +136,18 @@ const App = () => {
                         <Route path="/add" element={<Add5/>}/>
                         <Route path="/list" element={<List5/>}/>
                         <Route path="/orders" element={<Orders5/>}/>
+                    </Routes>}
+                </div>
+            </div>}
+            {role === 'developtiers' && <div className='app2'>
+                <Navbar6 />
+                <hr />
+                <div className="app-content">
+                    {role === 'developtiers' && <Sidebar6 />}
+                    {role === 'developtiers' && <Routes>
+                        <Route path="/profile" element={<Profile6/>}/>
+                        <Route path="/add" element={<Add6/>}/>
+                        <Route path="/list" element={<List6/>}/>
                     </Routes>}
                 </div>
             </div>}

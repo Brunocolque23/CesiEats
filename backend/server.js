@@ -9,6 +9,7 @@ import orderRouter from "./routes/orderRoute.js"
 
 import restaurantRouter from "./routes/restaurantRoute.js"
 import livreurRouter from "./routes/livreurRoute.js"
+import developRouter from "./routes/developRoute.js"
 import apiRouter from "./routes/apiRoute.js"
 import dotenv from 'dotenv';
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/api/cart", cartRouter)
 app.use("/api/order",orderRouter)
 app.use("/api/restaurant",restaurantRouter)
 app.use("/api/livreur",livreurRouter)
+app.use("/api/develop",developRouter)
 app.use("/api/apis",apiRouter)
 
 app.get("/", (req, res) => {

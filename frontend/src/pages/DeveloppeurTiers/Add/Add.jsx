@@ -1,91 +1,139 @@
-import React, { useState } from 'react'
-import './Add.css'
-import { assets,url } from '../../../assets/assets';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { url } from '../../../assets/assets';
 import { toast } from 'react-toastify';
 
-const Add = () => {
+const List = () => {
+  const [apis, setApis] = useState([]);
+  const [formData, setFormData] = useState({
+    name: '',
+    secretKey: '',
+    iddevelop: ''
+  });
+  const [selectedApi, setSelectedApi] = useState(null);
 
-    const [data, setData] = useState({
-        name: "",
-        description: "",
-        price: "",
-        category: "Salad"
+  // Función para obtener la lista de APIs
+  const fetchApis = async () => {
+    try {
+      const response = await axios.get(`${url}/api/apis/getall`);
+      if (response.data.success) {
+        setApis(response.data.data);
+      } else {
+        toast.error("Error al obtener la lista de APIs");
+      }
+    } catch (error) {
+      console.error('Error fetching APIs:', error);
+      toast.error("Error al obtener la lista de APIs");
+    }
+  };
+
+  // Función para manejar cambios en el formulario
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Función para enviar el formulario y agregar un nuevo API
+  const addApi = async () => {
+    try {
+      const formDataWithId = { ...formData, iddevelop: localStorage.getItem('developid') || '' };
+      const response = await axios.post(`${url}/api/apis/createapis`, formDataWithId);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setFormData({ name: '', secretKey: '', iddevelop: localStorage.getItem('developid') || '' });
+        fetchApis();
+      } else {
+        toast.error(response.data.message || 'Error al agregar el API');
+      }
+    } catch (error) {
+      console.error('Error adding API:', error);
+      toast.error('Error al agregar el API');
+    }
+  };
+
+  // Función para manejar el clic en un API de la lista
+  const handleApiClick = (api) => {
+    setSelectedApi(api);
+    setFormData({
+      name: api.name,
+      secretKey: api.secretKey,
+      iddevelop: api.iddevelop
     });
+  };
 
-    const [image, setImage] = useState(false);
-
-    const onSubmitHandler = async (event) => {
-        event.preventDefault();
-        const formData = new FormData();
-        formData.append("name", data.name);
-        formData.append("description", data.description);
-        formData.append("price", Number(data.price));
-        formData.append("category", data.category);
-        formData.append("image", image);
-        const response = await axios.post(`${url}/api/food/add`, formData);
-        if (response.data.success) {
-            toast.success(response.data.message)
-            setData({
-                name: "",
-                description: "",
-                price: "",
-                category: "Salad"
-            })
-            setImage(false);
-        }
-        else{
-            toast.error(response.data.message)
-        }
+  // Función para manejar el clic en el botón Upgrade
+  const upgradeApi = async () => {
+    try {
+      const response = await axios.put(`${url}/api/apis/updateapis/${selectedApi._id}`, formData);
+      
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchApis(); // Recargar la lista de APIs actualizada
+      } else {
+        toast.error(response.data.message || 'Error al actualizar el API');
+      }
+    } catch (error) {
+      console.error('Error upgrading API:', error);
+      toast.error('Error al actualizar el API');
     }
+  };
 
-    const onChangeHandler = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setData(data => ({ ...data, [name]: value }))
-    }
+  // Cargar la lista de APIs al montar el componente
+  useEffect(() => {
+    fetchApis();
+  }, []);
 
-    return (
-        <div className='add'>
-            <form className='flex-col' onSubmit={onSubmitHandler}>
-                <div className='add-img-upload flex-col'>
-                    <p>Upload image</p>
-                    <label htmlFor="image">
-                        <img src={!image ? assets.upload_area : URL.createObjectURL(image)} alt="" />
-                    </label>
-                    <input onChange={(e) => { setImage(e.target.files[0]) }} type="file" id="image" hidden required />
-                </div>
-                <div className='add-product-name flex-col'>
-                    <p>Product name</p>
-                    <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='Type here' required />
-                </div>
-                <div className='add-product-description flex-col'>
-                    <p>Product description</p>
-                    <textarea name='description' onChange={onChangeHandler} value={data.description} type="text" rows={6} placeholder='Write content here' required />
-                </div>
-                <div className='add-category-price'>
-                    <div className='add-category flex-col'>
-                        <p>Product category</p>
-                        <select name='category' onChange={onChangeHandler} >
-                            <option value="Salad">Salad</option>
-                            <option value="Rolls">Rolls</option>
-                            <option value="Deserts">Deserts</option>
-                            <option value="Sandwich">Sandwich</option>
-                            <option value="Cake">Cake</option>
-                            <option value="Pure Veg">Pure Veg</option>
-                            <option value="Pasta">Pasta</option>
-                            <option value="Noodles">Noodles</option>
-                        </select>
-                    </div>
-                    <div className='add-price flex-col'>
-                        <p>Product Price</p>
-                        <input type="Number" name='price' onChange={onChangeHandler} value={data.price} placeholder='$25' />
-                    </div>
-                </div>
-                <button type='submit' className='add-btn' >ADD</button>
-            </form>
+  return (
+    <div className='list add flex-col'>
+      <h1>All APIs List</h1>
+
+      <div className='add-form'>
+        <h2>Add New API</h2>
+        <input
+          type='text'
+          placeholder='Name'
+          name='name'
+          value={formData.name}
+          onChange={handleInputChange}
+        />
+        <input
+          type='text'
+          placeholder='Secret Key'
+          name='secretKey'
+          value={formData.secretKey}
+          onChange={handleInputChange}
+        />
+        <button onClick={addApi}>Add API</button>
+      </div>
+
+      <div className='list-table'>
+        <div className="list-table-format title">
+          <b>Name</b>
+          <b>Secret Key</b>
+          <b>Development ID</b>
         </div>
-    )
-}
+        {apis.map(api => (
+          <div key={api._id} className='list-table-format' onClick={() => handleApiClick(api)}>
+            <p>{api.name}</p>
+            <p>{api.secretKey}</p>
+            <p>{api.iddevelop}</p>
+          </div>
+        ))}
+      </div>
 
-export default Add
+      {/* Mostrar detalles del API seleccionado */}
+      {selectedApi && (
+        <div className='selected-api'>
+          <h2>Selected API Details</h2>
+          <p>Name: {selectedApi.name}</p>
+          <p>Secret Key: {selectedApi.secretKey}</p>
+          <p>Development ID: {selectedApi.iddevelop}</p>
+          <button onClick={upgradeApi}>Upgrade</button>
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+export default List;
+
