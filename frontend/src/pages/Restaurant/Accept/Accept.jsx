@@ -9,9 +9,14 @@ const Order = () => {
 
   const fetchAllOrders = async () => {
     try {
+      const restaurantname = localStorage.getItem('restaurantname');
       const response = await axios.get(`${url}/api/order/list2`);
       if (response.data.success) {
-        setOrders(response.data.data.reverse());
+        const allOrders = response.data.data.reverse();
+        const filteredOrders = allOrders.filter(order =>
+          order.items.some(item => item.restaurant === restaurantname)
+        );
+        setOrders(filteredOrders);
       } else {
         toast.error("Error");
       }
@@ -45,7 +50,7 @@ const Order = () => {
 
   return (
     <div className='order add'>
-      <h3>Order Page</h3>
+      <h3>Acceptation Page</h3>
       <div className="order-list">
         {orders.map((order, index) => (
           <div key={index} className='order-item'>

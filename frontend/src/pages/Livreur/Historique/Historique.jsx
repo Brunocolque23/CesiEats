@@ -10,16 +10,18 @@ const Order = () => {
 
   const fetchAllOrders = async () => {
     const response = await axios.get(`${url}/api/order/list`)
-    if (response.data.success) {
-      setOrders(response.data.data.reverse());
-    }
-    else {
-      toast.error("Error")
-    }
+    const livreurid = localStorage.getItem("livreurid");
+      if (response.data.success) {
+        const allOrders = response.data.data.reverse();
+        const filteredOrders = allOrders.filter(order => order.livreurid === livreurid);
+        setOrders(filteredOrders);
+      } else {
+        toast.error("Error");
+      }
   }
 
   const statusHandler = async (event,orderId) => {
-    console.log(event,orderId);
+    //console.log(event,orderId);
     const response = await axios.post(`${url}/api/order/status`,{
       orderId,
       status:event.target.value

@@ -12,10 +12,13 @@ const Order = () => {
   const fetchAllOrders = async () => {
     try {
       const response = await axios.get(`${url}/api/order/list3`);
+      const livreurid = localStorage.getItem("livreurid");
       if (response.data.success) {
-        setOrders(response.data.data.reverse());
+        const allOrders = response.data.data.reverse();
+        const filteredOrders = allOrders.filter(order => order.livreurid === livreurid);
+        setOrders(filteredOrders);
       } else {
-        toast.error('Error');
+        toast.error("Error");
       }
     } catch (error) {
       toast.error('Error fetching orders');
@@ -27,12 +30,12 @@ const Order = () => {
     try {
       const response = await axios.post(`${url}/api/order/status`, {
         orderId,
-        status: status,
+        status,
       });
       if (response.data.success) {
         await fetchAllOrders();
         if (status === 'Food Processing2') {
-          setSelectedOrder(orderId); // Establece el pedido seleccionado después de aceptarlo
+          setSelectedOrder(orderId); // Set the selected order after accepting it
         }
         toast.success(`Order ${orderId} ${status === 'Accepted' ? 'accepted' : 'rejected'}`);
       } else {
@@ -40,6 +43,26 @@ const Order = () => {
       }
     } catch (error) {
       toast.error(`Error updating order ${orderId}`);
+      console.error(error);
+    }
+  };
+
+  const updateLivreurId = async (orderId) => {
+    try {
+      const livreurid = localStorage.getItem("livreurid");
+      //toast.error(livreurid);
+      const response = await axios.post(`${url}/api/order/update-livreur`, {
+        orderId,
+        livreurid: livreurid || 'default_livreurid', // Include livreurid in the request
+      });
+      if (response.data.success) {
+        await fetchAllOrders();
+        toast.success(`Livreur ID updated for order ${orderId}`);
+      } else {
+        toast.error(`Error updating livreur ID for order ${orderId}`);
+      }
+    } catch (error) {
+      toast.error(`Error updating livreur ID for order ${orderId}`);
       console.error(error);
     }
   };
@@ -99,7 +122,10 @@ const Order = () => {
                 <>
                   <button
                     className='custom-btn accept-btn'
-                    onClick={() => updateOrderStatus(order._id, 'Food Processing2')}
+                    onClick={() => {
+                      updateOrderStatus(order._id, 'Food Processing2');
+                      updateLivreurId(order._id);
+                    }}
                   >
                     Accept
                   </button>
@@ -128,13 +154,13 @@ const Order = () => {
                 </button>
               )}
             </div>
-            {/* Muestra el QR si el pedido está en "Food Processing2" */}
-            {order.status === 'Food Processing2' || order.status === 'On our way' ? (
-                <div className='qr-container'>
-                  <h4>QR Code</h4>
-                  <QRCode value={getQRCodeValue(order)} />
-                </div>
-              ) : null}
+            {/* Show QR if the order is in "Food Processing2" or "On our way" */}
+            {(order.status === 'Food Processing2' || order.status === 'On our way') && (
+              <div className='qr-container'>
+                <h4>QR Code</h4>
+                <QRCode value={getQRCodeValue(order)} />
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -143,4 +169,3 @@ const Order = () => {
 };
 
 export default Order;
-
