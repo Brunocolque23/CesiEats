@@ -5,9 +5,12 @@ import userModel from "../models/userModel.js";
 import livreurModel from "../models/livreurModel.js";
 import developModel from "../models/developModel.js";
 import restaurantModel from "../models/restaurantModel.js";
+import servicetechniqueModel from "../models/servicetechniqueModel.js";
+import Log from "../models/logModel.js";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import fs from 'fs'
 import { ToastContainer, toast } from 'react-toastify'; // Importa 'toast'
 
 dotenv.config();
@@ -18,45 +21,70 @@ const createToken = (id) => {
 }
 
 // Login user
+
+
+const logAttempt = async (action, role, email, user_id, success) => {
+    try {
+        const logEntry = new Log({
+            action,
+            role,
+            email,
+            user_id,
+            success
+        });
+        await logEntry.save();
+    } catch (error) {
+        console.error('Error logging attempt:', error);
+    }
+};
+
 const loginUser = async (req, res) => {
     const {email, password} = req.body;
+
     try {
         const user = await userModel.findOne({email});
 
         if (!user) {
+            await logAttempt('login', null, email, null, false);
             return res.json({success: false, message: "User does not exist"});
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
+            await logAttempt('login', user.role, email, user._id, false);
             return res.json({success: false, message: "Invalid credentials"});
         }
         
         const token = createToken(user._id);
         toast.success(user.role);
+        await logAttempt('login', user.role, email, user._id, true);
         res.json({success: true, token, role: user.role, email: user.email});
     } catch (error) {
         console.log(error);
+        await logAttempt('login', null, email, null, false);
         res.json({success: false, message: "Error"});
     }
-}
+};
 
-// Register user
 const registerUser = async (req, res) => {
     const {name, email, password, role} = req.body;
+
     try {
         // Check if user already exists
         const exists = await userModel.findOne({email});
         if (exists) {
+            await logAttempt('register', role, email, null, false);
             return res.json({success: false, message: "User already exists"});
         }
 
         // Validate email format & strong password
         if (!validator.isEmail(email)) {
+            await logAttempt('register', role, email, null, false);
             return res.json({success: false, message: "Please enter a valid email"});
         }
         if (password.length < 8) {
+            await logAttempt('register', role, email, null, false);
             return res.json({success: false, message: "Please enter a strong password"});
         }
 
@@ -67,40 +95,35 @@ const registerUser = async (req, res) => {
         // Create new user
         const newUser = new userModel({name, email, password: hashedPassword, role});
         const user = await newUser.save();
-        
-        //console.log(name);
-        //console.log(email);
-        
+
         // If role is "restaurateur", create new restaurant for the user
         if (role === "restaurateur") {
-            
-            const newRestaurant = new restaurantModel({ name: `${name}'s Restaurant`, email,password });
+            const newRestaurant = new restaurantModel({ name: `${name}'s Restaurant`, email, password });
             await newRestaurant.save();
-            //console.log(role);
-            
         }
         if (role === "livreur") {
-            const newLivreur = new livreurModel({ name: name, email,password });
+            const newLivreur = new livreurModel({ name: name, email, password });
             await newLivreur.save();
-            //console.log(role);
-            
         }
         if (role === "developtiers") {
-            const newDevelop = new developModel({ name: name, email,password });
+            const newDevelop = new developModel({ name: name, email, password });
             await newDevelop.save();
-            //console.log(role);
-            
         }
-        
+        if (role === "servicetechnique") {
+            const newServicetechnique = new servicetechniqueModel({ name: name, email, password });
+            await newServicetechnique.save();
+        }
 
         const token = createToken(user._id);
+        await logAttempt('register', user.role, email, user._id, true);
         res.json({success: true, token, role: user.role});
 
     } catch (error) {
         console.log(error);
+        await logAttempt('register', role, email, null, false);
         res.json({success: false, message: "Error"});
     }
-}
+};
 
 // Forgot password
 const forgotPassword = async (req, res) => {

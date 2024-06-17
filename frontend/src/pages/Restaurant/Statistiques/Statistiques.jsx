@@ -201,7 +201,7 @@ const getOrdersPerProduct = async () => {
     labels: ordersPerDayLabels,
     datasets: [
       {
-	          label: 'Orders per Day',
+        label: 'Orders per Day',
         data: ordersPerDayData,
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',

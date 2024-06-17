@@ -49,7 +49,7 @@ const ParrainerRestaurant = () => {
         <div className='profile'>
             <div className='left-section'>
                 <div className="parrainer-image">
-                    <img src={assets.parrainer} alt="parrainer" />
+                    <img src={assets.restaurantparrainer} alt="parrainer" />
                 </div>
                 <div className='partner-text'>
                     <p>Recommandez CESI EATS à vos collègues restaurateurs et gagnez 50 € pour chaque restaurant qui s'inscrit et utilise nos services. Aidez les autres à augmenter leur visibilité et à attirer plus de clients. Profitez de cette opportunité pour gagner de l'argent supplémentaire tout en soutenant votre communauté.</p>
