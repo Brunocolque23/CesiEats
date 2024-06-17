@@ -6,6 +6,7 @@ import livreurModel from "../models/livreurModel.js";
 import developModel from "../models/developModel.js";
 import restaurantModel from "../models/restaurantModel.js";
 import servicetechniqueModel from "../models/servicetechniqueModel.js";
+import servicecomercialModel from "../models/servicecommercialModel.js";
 import Log from "../models/logModel.js";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
@@ -113,7 +114,10 @@ const registerUser = async (req, res) => {
             const newServicetechnique = new servicetechniqueModel({ name: name, email, password });
             await newServicetechnique.save();
         }
-
+        if (role === "servicecomercial") {
+            const newServicecomercial = new servicecomercialModel({ name: name, email, password });
+            await newServicecomercial.save();
+        }
         const token = createToken(user._id);
         await logAttempt('register', user.role, email, user._id, true);
         res.json({success: true, token, role: user.role});
@@ -292,4 +296,71 @@ const deleteUser = async (req, res) => {
     }
 }
 
-export { loginUser, registerUser, forgotPassword, resetPassword, getUserDetails, updateUser, deleteUser };
+const listUsers = async (req, res) => {
+    try {
+        const users = await userModel.find({});
+        res.json({ success: true, data: users });
+    } catch (error) {
+        console.error("Error occurred in listUsers:", error.message);
+        res.status(500).json({ success: false, message: `Error: ${error.message}` });
+    }
+};
+
+const deleteUserById = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const user = await userModel.findByIdAndDelete(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        res.json({ success: true, message: 'User deleted successfully' });
+    } catch (error) {
+        console.error("Error occurred in deleteUserById:", error.message);
+        res.status(500).json({ success: false, message: `Error: ${error.message}` });
+    }
+};
+
+const removeUser = async (req, res) => {
+    try {
+        const { id, email, role } = req.body;
+
+        // Encuentra y elimina el usuario del modelo principal
+        const user = await userModel.findById(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        await userModel.findByIdAndDelete(id);
+
+        // Encuentra y elimina el usuario de su tabla específica basado en el rol
+        switch (role) {
+            case 'servicetechnique':
+                await servicetechniqueModel.findOneAndDelete({ email });
+                break;
+            case 'servicecomercial':
+                await servicecomercialModel.findOneAndDelete({ email });
+                break;
+            case 'restaurateur':
+                await restaurantModel.findOneAndDelete({ email });
+                break;
+            case 'livreur':
+                await livreurModel.findOneAndDelete({ email });
+                break;
+            case 'developtiers':
+                await developModel.findOneAndDelete({ email });
+                break;
+            default:
+                break;
+        }
+
+        res.json({ success: true, message: "User removed" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "Error removing user" });
+    }
+};
+
+export { loginUser, registerUser,deleteUser, forgotPassword, resetPassword, getUserDetails, updateUser, deleteUserById, listUsers,removeUser };
+

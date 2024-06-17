@@ -1,25 +1,33 @@
-.list-table-format{
-    display: grid;
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 15px;
-    border: 1px solid #cacaca;
-    font-size: 13px;
-}
-.list-table-format.title{
+.user-list-container {
+    padding: 20px;
     background-color: #f9f9f9;
-}
-.list-table-format img{
-    width: 50px;
-}
-@media(max-width:600px){
-
-    .list-table-format{
-        grid-template-columns: 1fr 3fr 1fr;
-        gap: 15px;
-    }
-    .list-table-format.title{
-        display: none;
-    }
-}
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .user-table th, .user-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .user-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .delete-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .delete-button:hover {
+    background-color: #ff1a1a;
+  }
+  

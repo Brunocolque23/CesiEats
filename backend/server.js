@@ -14,6 +14,7 @@ import apiRouter from "./routes/apiRoute.js"
 import logRouter from "./routes/logRoute.js"
 
 import servicetechniqueRouter from "./routes/servicetechniqueRoute.js"
+import servicecomercialRouter from "./routes/servicecomercialRoute.js"
 import dotenv from 'dotenv';
 dotenv.config();
 // app config
@@ -38,6 +39,7 @@ app.use("/api/restaurant",restaurantRouter)
 app.use("/api/livreur",livreurRouter)
 app.use("/api/develop",developRouter)
 app.use("/api/servicetechnique",servicetechniqueRouter)
+app.use("/api/servicecomercial",servicecomercialRouter)
 app.use("/api/apis",apiRouter)
 app.use("/api/log",logRouter)
 
