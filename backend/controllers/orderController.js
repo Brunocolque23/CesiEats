@@ -172,6 +172,16 @@ const updateLivreurId = async (req, res) => {
     }
 };
 
+const listorders2 = async (req, res) => {
+    try {
+        const orders = await orderModel.find({});
+        res.json({ success: true, data: orders });
+    } catch (error) {
+        console.error("Error occurred in listOrders:", error.message);
+        res.status(500).json({ success: false, message: `Error: ${error.message}` });
+    }
+};
+
 export { 
     placeOrder, 
     listOrders, 
@@ -182,5 +192,6 @@ export {
     verifyOrder, 
     listOrderStates, 
     receiveOrder, 
-    updateLivreurId 
+    updateLivreurId,
+    listorders2 
 };

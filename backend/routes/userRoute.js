@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser,registerUser,forgotPassword,resetPassword,getUserDetails,updateUser,deleteUser} from '../controllers/userController.js';
+import { loginUser,registerUser,forgotPassword,resetPassword,getUserDetails,updateUser,deleteUser,listUsers,deleteUserById,removeUser} from '../controllers/userController.js';
 const userRouter = express.Router();
 
 userRouter.post("/register",registerUser);
@@ -9,5 +9,8 @@ userRouter.put("/resetpassword/:token", resetPassword);
 userRouter.get('/details', getUserDetails);
 userRouter.delete('/delete', deleteUser);
 userRouter.put('/update', updateUser);
+userRouter.get('/list', listUsers); 
+userRouter.delete('/delete/:userId', deleteUserById);
+userRouter.post("/remove",removeUser);
 
 export default userRouter;

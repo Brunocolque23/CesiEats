@@ -36,7 +36,7 @@ import Sidebar3 from './components/Livreur/Sidebar/Sidebar';
 ////Service Commercial
 import Navbar4 from './components/ServiceCommercial/Navbar/Navbar';
 import Sidebar4 from './components/ServiceCommercial/Sidebar/Sidebar';
-import Add4 from './pages/ServiceCommercial/Add/Add';
+import Profile4 from './pages/ServiceCommercial/Profile/Profile';
 import List4 from './pages/ServiceCommercial/List/List';
 import Orders4 from './pages/ServiceCommercial/Orders/Orders';
 ////Service Technique
@@ -76,7 +76,7 @@ const App = () => {
             {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
             <div className='app'>
                 <Navbar setShowLogin={setShowLogin} />
-                {role !== 'restaurateur' && role !== 'livreur' && role !== 'servicetechnique' && role !== 'serviceCommercial' && role !== 'developtiers' &&<Routes>
+                {role !== 'restaurateur' && role !== 'servicecomercial' && role !== 'livreur' && role !== 'servicetechnique' && role !== 'serviceCommercial' && role !== 'developtiers' &&<Routes>
                     <Route path='/' element={<Home />} />
                     <Route path='/cart' element={<Cart />} />
                     <Route path='/order' element={<PlaceOrder />} />
@@ -132,13 +132,13 @@ const App = () => {
                     </Routes>}
                 </div>
             </div>}
-            {role === 'serviceCommercial' && <div className='app2'>
+            {role === 'servicecomercial' && <div className='app2'>
                 <Navbar4 />
                 <hr />
                 <div className="app-content">
-                    {role === 'serviceCommercial' && <Sidebar4 />}
-                    {role === 'serviceCommercial' && <Routes>
-                        <Route path="/add" element={<Add4/>}/>
+                    {role === 'servicecomercial' && <Sidebar4 />}
+                    {role === 'servicecomercial' && <Routes>
+                        <Route path="/profile" element={<Profile4/>}/>
                         <Route path="/list" element={<List4/>}/>
                         <Route path="/orders" element={<Orders4/>}/>
                     </Routes>}

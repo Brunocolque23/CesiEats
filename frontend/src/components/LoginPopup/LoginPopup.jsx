@@ -94,7 +94,7 @@ const LoginPopup = ({ setShowLogin }) => {
                                 <option value="livreur">Deliverer</option>
                                 <option value="restaurateur">Restaurateur</option>
                                 <option value="servicetechnique">servicetechnique</option>
-                                <option value="serviceCommercial">serviceCommercial</option>
+                                <option value="servicecomercial">serviceCommercial</option>
                                 <option value="developtiers">Developpeur tiers</option>
                             </select>
                         </>
