@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import archiver from 'archiver';
+import LogDownload from '../models/logDownloadModel.js'; // Importar el modelo LogDownload
 
 const envFilePath = path.join(path.resolve(), '.env');
 
@@ -33,6 +34,7 @@ apirouter.put('/updateapis/:id', async (req, res) => {
 // Ruta para eliminar un registro de API por su ID
 apirouter.delete('/deleteapis/:id', deleteApi);
 
+// Ruta para escribir una nueva variable de entorno en el archivo .env
 apirouter.post('/writeenv', async (req, res) => {
     const { name, secretKey } = req.body;
 
@@ -55,21 +57,34 @@ apirouter.post('/writeenv', async (req, res) => {
 // Helper function to create and send zip files
 const sendZipFile = (res, dirPath) => {
     const archive = archiver('zip', {
-        zlib: { level: 9 } // Sets the compression level.
+        zlib: { level: 9 } // Establece el nivel de compresión.
     });
 
     const outputPath = path.join(path.resolve(), `${path.basename(dirPath)}.zip`);
 
     const output = fs.createWriteStream(outputPath);
     output.on('close', () => {
-        res.download(outputPath, (err) => {
-            if (err) {
-                console.error('Error sending file:', err);
-                res.status(500).send('Error sending file');
-            } else {
-                fs.unlinkSync(outputPath); // Delete the file after sending
-            }
+        // Guardar información de la descarga en la base de datos
+        const logDownload = new LogDownload({
+            directory: dirPath, // Utiliza el dirPath completo en lugar del nombre base
+            timestamp: new Date()
         });
+
+        logDownload.save()
+            .then(() => {
+                res.download(outputPath, (err) => {
+                    if (err) {
+                        console.error('Error sending file:', err);
+                        res.status(500).send('Error sending file');
+                    } else {
+                        fs.unlinkSync(outputPath); // Eliminar el archivo después de enviarlo
+                    }
+                });
+            })
+            .catch(err => {
+                console.error('Error saving log download:', err);
+                res.status(500).json({ success: false, message: 'Error saving log download' });
+            });
     });
 
     archive.on('error', (err) => {
@@ -81,7 +96,7 @@ const sendZipFile = (res, dirPath) => {
     archive.finalize();
 };
 
-// Routes to download directories
+// Routes para descargar directorios
 apirouter.get('/download/controllers', (req, res) => {
     const dirPath = path.join(path.resolve(), 'backend', 'controllers');
     sendZipFile(res, dirPath);
@@ -98,4 +113,3 @@ apirouter.get('/download/routes', (req, res) => {
 });
 
 export default apirouter;
-

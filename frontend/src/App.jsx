@@ -43,8 +43,10 @@ import Orders4 from './pages/ServiceCommercial/Orders/Orders';
 import Navbar5 from './components/ServiceTechnique/Navbar/Navbar';
 import Sidebar5 from './components/ServiceTechnique/Sidebar/Sidebar';
 import Profile5 from './pages/ServiceTechnique/Profile/Profile';
-import List5 from './pages/ServiceTechnique/List/List';
+import Log5 from './pages/ServiceTechnique/Log/Log';
 import Orders5 from './pages/ServiceTechnique/Orders/Orders';
+import Composan5 from './pages/ServiceTechnique/Composant/Composan';
+import Statistiques5 from './pages/ServiceTechnique/Statistiques/Statistiques';
 ////Developeur Tiers
 import Navbar6 from './components/DeveloppeurTiers/Navbar/Navbar';
 import Sidebar6 from './components/DeveloppeurTiers/Sidebar/Sidebar';
@@ -123,8 +125,10 @@ const App = () => {
                     {role === 'servicetechnique' && <Sidebar5 />}
                     {role === 'servicetechnique' && <Routes>
                         <Route path="/add" element={<Profile5/>}/>
-                        <Route path="/list" element={<List5/>}/>
+                        <Route path="/composant" element={<Composan5/>}/>
+                        <Route path="/log" element={<Log5/>}/>
                         <Route path="/orders" element={<Orders5/>}/>
+                        <Route path="/statistiques" element={<Statistiques5/>}/>
                     </Routes>}
                 </div>
             </div>}

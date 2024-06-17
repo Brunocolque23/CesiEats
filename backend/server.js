@@ -11,6 +11,7 @@ import restaurantRouter from "./routes/restaurantRoute.js"
 import livreurRouter from "./routes/livreurRoute.js"
 import developRouter from "./routes/developRoute.js"
 import apiRouter from "./routes/apiRoute.js"
+import logRouter from "./routes/logRoute.js"
 
 import servicetechniqueRouter from "./routes/servicetechniqueRoute.js"
 import dotenv from 'dotenv';
@@ -38,6 +39,7 @@ app.use("/api/livreur",livreurRouter)
 app.use("/api/develop",developRouter)
 app.use("/api/servicetechnique",servicetechniqueRouter)
 app.use("/api/apis",apiRouter)
+app.use("/api/log",logRouter)
 
 app.get("/", (req, res) => {
     res.send("API Working")
