@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './PlaceOrder.css';
 import { StoreContext } from '../../Context/StoreContext';
-import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -23,7 +22,7 @@ const PlaceOrder = () => {
     const [loading, setLoading] = useState(false);
     const [orderStatus, setOrderStatus] = useState('');
 
-    const { getTotalCartAmount, token, food_list, cartItems, url, setCartItems } = useContext(StoreContext);
+    const { getTotalCartAmount, token, food_list, cartItems, url, setCartItems,discount } = useContext(StoreContext);
     const navigate = useNavigate();
 
     const onChangeHandler = (event) => {
@@ -41,10 +40,28 @@ const PlaceOrder = () => {
         }
     };
 
+    const createNotification = async (restaurantId) => {
+        const notificationData = {
+            message: "You have received a new order",
+            role: "restaurant",
+            userid: restaurantId,
+            status: "new"
+        };
+        try {
+            await axios.post(`${url}/api/notification/createNotification`, notificationData);
+            toast.success("Notification sent successfully");
+        } catch (error) {
+            console.error('Error sending notification:', error);
+            toast.error("Error sending notification");
+        }
+    };
+
     const placeOrder = async (e) => {
         e.preventDefault();
         setLoading(true);
         let orderItems = [];
+        let restaurantId = null;
+
         food_list.map((item) => {
             if (cartItems[item._id] > 0) {
                 let itemInfo = item;
@@ -52,15 +69,18 @@ const PlaceOrder = () => {
                 orderItems.push(itemInfo);
             }
         });
+        await createNotification(restaurantId);
         let orderData = {
             address: data,
             items: orderItems,
-            amount: getTotalCartAmount() + 5,
+            amount: getTotalWithDiscount() + 5,
         };
+
         try {
             let response = await axios.post(`${url}/api/order/place`, orderData, { headers: { token } });
             if (response.data.success) {
                 const { orderId, session_url } = response.data;
+               // await createNotification(restaurantId);
                 window.location.replace(session_url);
 
                 const interval = setInterval(async () => {
@@ -69,14 +89,15 @@ const PlaceOrder = () => {
                         clearInterval(interval);
                         setLoading(false);
                         toast.success('Your order is on its way');
+                         // Send notification after placing order
                     }
                 }, 5000); // Check every 5 seconds
             } else {
-                //setLoading(false);
+                setLoading(false);
                 toast.error("Something Went Wrong");
             }
         } catch (error) {
-            //setLoading(false);
+            setLoading(false);
             toast.error("Something Went Wrong");
         }
     };
@@ -89,6 +110,11 @@ const PlaceOrder = () => {
             navigate('/cart');
         }
     }, [token]);
+
+    const getTotalWithDiscount = () => {
+        const total = getTotalCartAmount();
+        return total - total * discount;
+    };
 
     return (
         <div>
@@ -119,9 +145,11 @@ const PlaceOrder = () => {
                             <div>
                                 <div className="cart-total-details"><p>Subtotal</p><p>${getTotalCartAmount()}</p></div>
                                 <hr />
+                                <div className="cart-total-details"><p>Discount</p><p>{discount > 0 ? `-${(discount * 100).toFixed(0)}%` : '-'}</p></div>
+                                <hr />
                                 <div className="cart-total-details"><p>Delivery Fee</p><p>${getTotalCartAmount() === 0 ? 0 : 5}</p></div>
                                 <hr />
-                                <div className="cart-total-details"><b>Total</b><b>${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 5}</b></div>
+                                <div className="cart-total-details"><b>Total</b><b>${getTotalCartAmount() === 0 ? 0 : (getTotalWithDiscount() + 5).toFixed(2)}</b></div>
                             </div>
                         </div>
                         <button className='place-order-submit' type='submit'>Proceed To Payment</button>

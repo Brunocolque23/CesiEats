@@ -26,15 +26,38 @@ const Order = () => {
     }
   };
 
-  const updateOrderStatus = async (orderId, status) => {
+  const createNotification = async (message, role, userId) => {
+    const notificationData = {
+      message,
+      role,
+      userid: userId,
+      status: 'new'
+    };
+    try {
+      await axios.post(`${url}/api/notification/createNotification`, notificationData);
+      toast.success("Notification sent successfully");
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      toast.error("Error sending notification");
+    }
+  };
+
+  const updateOrderStatus = async (orderId, status, userId) => {
     try {
       const response = await axios.post(`${url}/api/order/status`, {
         orderId,
-        status: status
+        status
       });
       if (response.data.success) {
         await fetchAllOrders();
-        toast.success(`Order ${orderId} ${status === 'Accepted' ? 'accepted' : 'rejected'}`);
+        toast.success(`Order ${orderId} ${status === 'Waiting for Livreur' ? 'Accepted' : 'Rejected'}`);
+        if (status === 'Waiting for Livreur') {
+          const restaurantname = localStorage.getItem('restaurantname');
+          // Send notification to livreur
+          await createNotification(`You have received a new order to be accepted by ${restaurantname}`, 'livreur', null);
+          // Send notification to user
+          await createNotification('Your order has been accepted. We are waiting for a deliverer to accept your order.', 'user', userId);
+        }
       } else {
         toast.error(`Error updating order ${orderId}`);
       }
@@ -76,8 +99,8 @@ const Order = () => {
             <p>Items: {order.items.length}</p>
             <p>${order.amount}</p>
             <div className="order-actions">
-              <button className="custom-btn accept-btn" onClick={() => updateOrderStatus(order._id, 'Waiting for Livreur')}>Accept</button>
-              <button className="custom-btn reject-btn" onClick={() => updateOrderStatus(order._id, 'Rejected by Restaurant')}>Reject</button>
+              <button className="custom-btn accept-btn" onClick={() => updateOrderStatus(order._id, 'Waiting for Livreur', order.userId)}>Accept</button>
+              <button className="custom-btn reject-btn" onClick={() => updateOrderStatus(order._id, 'Rejected by Restaurant', order.userId)}>Reject</button>
             </div>
           </div>
         ))}

@@ -7,13 +7,16 @@ import developModel from "../models/developModel.js";
 import restaurantModel from "../models/restaurantModel.js";
 import servicetechniqueModel from "../models/servicetechniqueModel.js";
 import servicecomercialModel from "../models/servicecommercialModel.js";
+import notificationModel from "../models/notificationModel.js";
+import Referral from "../models/referralModel.js";
+import PromoCode from "../models/promocodeModel.js"
 import Log from "../models/logModel.js";
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import fs from 'fs'
 import { ToastContainer, toast } from 'react-toastify'; // Importa 'toast'
-
+import { v4 as uuidv4 } from 'uuid';
 dotenv.config();
 
 // Create token
@@ -60,7 +63,23 @@ const loginUser = async (req, res) => {
         const token = createToken(user._id);
         toast.success(user.role);
         await logAttempt('login', user.role, email, user._id, true);
-        res.json({success: true, token, role: user.role, email: user.email});
+        const userid=user._id;
+        res.json({success: true, token, role: user.role, userid, email: user.email});
+        
+        const newnotif = new notificationModel({
+            message: "A new user has been logged. Please check the connections log",
+            role: "servicetechnique",
+            status: "new"
+        })
+    
+        try {
+            await newnotif.save();
+           // toast.success("done");
+          //  res.json({ success: true, message: "NOTIF Added" })
+        } catch (error) {
+           // res.json({ success: false, message: "Error" })
+        }
+
     } catch (error) {
         console.log(error);
         await logAttempt('login', null, email, null, false);
@@ -141,7 +160,6 @@ const forgotPassword = async (req, res) => {
 
         // Génération du token de réinitialisation de mot de passe
         const resetToken = crypto.randomBytes(32).toString("hex");
-        // const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
         const resetPasswordExpire = Date.now() + 24 * 60 * 60 * 1000; // Token expires in 24 hours
 
         // Enregistrement du token et de la date d'expiration dans la base de données
@@ -149,9 +167,70 @@ const forgotPassword = async (req, res) => {
         user.resetPasswordExpire = resetPasswordExpire;
         await user.save();
 
-        // Envoi du token de réinitialisation par email
+        // Construction de l'URL de réinitialisation
         const resetUrl = `${req.protocol}://localhost:5174/resetpassword/${resetToken}`;
-        const message = `You are receiving this email because you have requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
+
+        // Contenu HTML de l'email
+        const htmlContent = `
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Email de réinitialisation de mot de passe</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .container {
+                        max-width: 600px;
+                        margin: 20px auto;
+                        padding: 20px;
+                        background-color: #ffffff;
+                        border: 1px solid #ddd;
+                        border-radius: 5px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    h1 {
+                        color: #333;
+                        border-bottom: 2px solid tomato; /* Couleur tomate pour la bordure */
+                        padding-bottom: 10px;
+                        text-align: center; /* Centrer le titre */
+                    }
+                    p {
+                        margin-bottom: 15px;
+                        color: #555; /* Couleur du texte */
+                    }
+                    a {
+                        display: inline-block;
+                        padding: 10px 20px;
+                        background-color: tomato; /* Couleur tomate pour le fond du bouton */
+                        color: #fff;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        margin-top: 15px;
+                        text-align: center; /* Centrer le texte dans le bouton */
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>Réinitialisation de mot de passe</h1>
+                    <p>Bonjour ${user.name},</p>
+                    <p>Vous recevez cet email car vous avez demandé la réinitialisation de votre mot de passe.</p>
+                    <p>Veuillez cliquer sur le bouton ci-dessous pour réinitialiser votre mot de passe :</p>
+                    <a href="${resetUrl}" style="margin: 0 auto; display: block; width: fit-content;">Réinitialiser mon mot de passe</a>
+                    <p>Si vous n'avez pas demandé cela, veuillez ignorer cet email.</p>
+                </div>
+            </body>
+            </html>
+        `;
+
+        // Configuration du transporteur de messagerie
         const transporter = nodemailer.createTransport({
             service: 'Gmail',
             auth: {
@@ -159,12 +238,16 @@ const forgotPassword = async (req, res) => {
                 pass: process.env.EMAIL_PASSWORD
             }
         });
+
+        // Options de l'email
         const mailOptions = {
             from: process.env.EMAIL_FROM,
             to: user.email,
-            subject: " CESI EATS - Mot de passe oublié ",
-            text: message
+            subject: "Réinitialisation de mot de passe - CESI EATS",
+            html: htmlContent // Utilisation du contenu HTML ici
         };
+
+        // Envoi de l'email
         await transporter.sendMail(mailOptions);
 
         res.json({ success: true, message: "Email sent" });
@@ -173,6 +256,7 @@ const forgotPassword = async (req, res) => {
         res.json({ success: false, message: `Error: ${error.message}` });
     }
 }
+
 
 // Reset password
 const resetPassword = async (req, res) => {
@@ -362,5 +446,86 @@ const removeUser = async (req, res) => {
     }
 };
 
-export { loginUser, registerUser,deleteUser, forgotPassword, resetPassword, getUserDetails, updateUser, deleteUserById, listUsers,removeUser };
+const sendReferral = async (req, res) => {
+    const { referrerEmail, referredEmail } = req.body;
+
+    try {
+        // Vérifier si l'invitation existe déjà
+        const existingReferral = await Referral.findOne({ referredEmail });
+        if (existingReferral) {
+            return res.status(400).json({ message: 'This email has already been referred.' });
+        }
+
+        // Générer un token unique
+        const token = crypto.randomBytes(32).toString('hex');
+
+        // Enregistrer l'invitation dans la base de données
+        const referral = new Referral({ referrerEmail, referredEmail, token });
+        await referral.save();
+
+        // Créer l'URL de parrainage pour la personne parrainée
+        const signupUrl = `${req.protocol}://localhost:5173/signup?token=${token}`;
+
+        // Envoyer l'email à la personne parrainée
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD
+            }
+        });
+
+        const referredMailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: referredEmail,
+            subject: 'Join us and get started!',
+            text: `You have been invited to join our app by your friend. Sign up using the following link: ${signupUrl}`
+        };
+
+        await transporter.sendMail(referredMailOptions);
+
+        // Générer un code promo unique pour le parrain
+        const promoCode = uuidv4();
+
+        // Enregistrer le code promo dans la base de données
+        await PromoCode.create({ email: referrerEmail, code: promoCode });
+
+        // Envoyer l'email au parrain avec le code promo
+        const referrerMailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: referrerEmail,
+            subject: 'Thank you for referring a friend!',
+            text: `Your friend ${referredEmail} has joined us. Here is your promo code: ${promoCode}`
+        };
+
+        await transporter.sendMail(referrerMailOptions);
+
+        res.status(200).json({ message: 'Referral emails sent successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while sending the referral emails.' });
+    }
+};
+
+const adduser = async (req, res) => {
+    const { name = "newuser", email, localisation, password } = req.body;
+    try {
+        // Verificar si el restaurante ya existe
+        const existingUser = await userModel.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "User already exists" });
+        }
+
+        // Crear el nuevo restaurante
+        const newUser = new userModel({ name, email, localisation, password });
+        await newUser.save();
+
+        res.status(201).json({ success: true, message: "User created successfully" });
+    } catch (error) {
+        console.error("Error adding restaurant:", error);
+        res.status(500).json({ success: false, message: "Error adding restaurant" });
+    }
+};
+
+export { loginUser, registerUser,deleteUser, forgotPassword, resetPassword, getUserDetails, updateUser, deleteUserById, listUsers,removeUser, sendReferral,adduser };
 

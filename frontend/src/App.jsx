@@ -12,6 +12,7 @@ import { ToastContainer, toast } from 'react-toastify'; // Importa 'toast'
 import 'react-toastify/dist/ReactToastify.css';
 import Verify from './pages/Verify/Verify';
 import User from './pages/User/User';
+import Parrainer from './pages/Parrainer/Parrainer';
 import { ResetPassword } from './pages/User/ResetPassword';
 /////// Restaurateur
 import Navbar2 from './components/Restaurant/Navbar/Navbar';
@@ -82,6 +83,7 @@ const App = () => {
                     <Route path='/order' element={<PlaceOrder />} />
                     <Route path='/myorders' element={<MyOrders />} />
                     <Route path='/api/user/details' element={<User />} />
+                    <Route path='/api/user/parrainer' element={<Parrainer />} />
                     <Route path='/verify' element={<Verify />} />
                     <Route path='/resetPassword/:token' element={<ResetPassword />} />
                 </Routes>}

@@ -1,24 +1,37 @@
 import mongoose from "mongoose";
 import orderModel from "../models/orderModel.js";
+import discountModel from "../models/discountModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const placeOrder = async (req, res) => {
     try {
+        // Verificar si hay un descuento para el userId
+        const userId = req.body.userId;
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        const userEmail = user.email;
+
+        // Verificar si hay un descuento para el userEmail en discountModel
+        const existingDiscount = await discountModel.findOne({ email: userEmail });
+
+        // Crear el nuevo pedido
         const newOrder = new orderModel({
             userId: req.body.userId,
             items: req.body.items,
             amount: req.body.amount,
             address: req.body.address,
         });
-        //console.log(req.body.userId);
-        //console.log(req.body.amount);
-        //console.log(req.body.amount);
-        await newOrder.save();
-        await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
 
-        const line_items = req.body.items.map((item) => ({
+									   
+									   
+        await newOrder.save();
+        await userModel.findByIdAndUpdate(req.body.userId, { cartData: {userId} });
+
+        let line_items = req.body.items.map((item) => ({
             price_data: {
                 currency: "eur",
                 product_data: {
@@ -29,20 +42,37 @@ const placeOrder = async (req, res) => {
             quantity: item.quantity
         }));
 
-        line_items.push({
+        // Calcular el subtotal antes del cargo por entrega
+        let subtotalAmount = line_items.reduce((total, item) => total + (item.price_data.unit_amount * item.quantity), 0);
+
+        // Agregar el cargo por entrega
+        const deliveryCharge = 5 * 100;
+
+        // Aplicar el descuento si existe
+        if (existingDiscount && existingDiscount.email === userEmail) {
+            const discountAmount = subtotalAmount * 0.25;
+            subtotalAmount -= discountAmount;
+            await discountModel.deleteOne({ email: userEmail });
+        }
+
+        // Calcular el monto final
+        const totalAmount = subtotalAmount + deliveryCharge;
+
+        // Crear una nueva lista de line_items basada en el subtotal después del descuento y el cargo por entrega
+        line_items = [{
             price_data: {
                 currency: "eur",
                 product_data: {
-                    name: "Delivery Charge"
+                    name: "Total"
                 },
-                unit_amount: 5 * 100
+                unit_amount: totalAmount
             },
             quantity: 1
-        });
+        }];
 
         const session = await stripe.checkout.sessions.create({
-            success_url: `http://localhost:5173/verify?success=true&orderId=${newOrder._id}`,
-            cancel_url: `http://localhost:5173/verify?success=false&orderId=${newOrder._id}`,
+            success_url: `http://localhost:5174/myorders`,
+            cancel_url: `http://localhost:5174/myorders`,
             line_items: line_items,
             mode: 'payment',
         });

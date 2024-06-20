@@ -37,6 +37,11 @@ const ParrainerRestaurant = () => {
             console.error('Erreur:', error);
             toast.error('Erreur lors de l\'ajout du restaurant ou de l\'envoi de l\'email');
         }
+
+        await axios.post(`${url}/api/user/sendReferral`, {
+            referrerEmail: localStorage.getItem("email"),
+            referredEmail: data.email
+        });
     }
 
     const onChangeHandler = (event) => {

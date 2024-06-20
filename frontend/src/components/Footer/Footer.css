@@ -52,3 +52,7 @@
         text-align: center;
     }
 }
+.footer-social-icons img {
+    width: 3px; /* Modifier la largeur comme souhaité */
+    height: auto; /* Assure que la hauteur s'ajuste proportionnellement */
+}

@@ -6,12 +6,14 @@ import foodRouter from "./routes/foodRoute.js"
 import 'dotenv/config'
 import cartRouter from "./routes/cartRoute.js"
 import orderRouter from "./routes/orderRoute.js"
-
+import discountRouter from "./routes/discountRoute.js"
 import restaurantRouter from "./routes/restaurantRoute.js"
 import livreurRouter from "./routes/livreurRoute.js"
+import promoCodeRoutes from "./routes/promocodeRoute.js"
 import developRouter from "./routes/developRoute.js"
 import apiRouter from "./routes/apiRoute.js"
 import logRouter from "./routes/logRoute.js"
+import notificationRouter from "./routes/notificationRoute.js"
 
 import servicetechniqueRouter from "./routes/servicetechniqueRoute.js"
 import servicecomercialRouter from "./routes/servicecomercialRoute.js"
@@ -42,6 +44,9 @@ app.use("/api/servicetechnique",servicetechniqueRouter)
 app.use("/api/servicecomercial",servicecomercialRouter)
 app.use("/api/apis",apiRouter)
 app.use("/api/log",logRouter)
+app.use("/api/notification",notificationRouter)
+app.use("/api/promocode", promoCodeRoutes)
+app.use("/api/discount",discountRouter)
 
 app.get("/", (req, res) => {
     res.send("API Working")
