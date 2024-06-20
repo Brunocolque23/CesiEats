@@ -37,10 +37,12 @@ const LoginPopup = ({ setShowLogin }) => {
             if (response.data.success) {
                 setToken(response.data.token);
                 localStorage.setItem("token", response.data.token);
+                localStorage.setItem("userid", response.data.userid);
                 localStorage.setItem("role", response.data.role);
                 localStorage.setItem("restaurantname", response.data.name);
                 localStorage.setItem("email", data.email);  // Guarda el email del formulario
-
+                const userid = localStorage.getItem("userid");
+                toast.error(userid);
                 // Añade el email al response.data
                 const updatedResponseData = { ...response.data, email: data.email };
                 
@@ -88,14 +90,12 @@ const LoginPopup = ({ setShowLogin }) => {
                         <>
                             <input name='name' onChange={onChangeHandler} value={data.name} type="text" placeholder='Your name' required />
                             <select name='role' onChange={onChangeHandler} value={data.role} required>
-                                <option value="" disabled>Vous êtes</option>
+                                <option value="" disabled>you are: </option>
                                 <option value="user">User</option>
-                                <option value="manager">Manager</option>
+                                
                                 <option value="livreur">Deliverer</option>
                                 <option value="restaurateur">Restaurateur</option>
-                                <option value="servicetechnique">servicetechnique</option>
-                                <option value="servicecomercial">serviceCommercial</option>
-                                <option value="developtiers">Developpeur tiers</option>
+
                             </select>
                         </>
                     }

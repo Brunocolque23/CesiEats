@@ -38,7 +38,7 @@ const RestaurantDisplay = ({ onRestaurantClick, selectedRestaurant }) => {
               <img className='restaurant-item-image' src={`${url}/images/${restaurant.image}`} alt={restaurant.name} />  
               <p>{restaurant.name}</p>
               <p>{restaurant.localisation}</p>
-              <p>{restaurant.phone}</p>
+              
             </div>
           </button>
         ))}

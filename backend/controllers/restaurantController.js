@@ -1,6 +1,7 @@
 import restaurantModel from "../models/restaurantModel.js";
 import orderModel from "../models/orderModel.js";
 
+
 import fs from 'fs'
 
 // all restaurant list
@@ -44,13 +45,13 @@ const addrestaurant = async (req, res) => {
     const { name = "newrestaurante", email, localisation, phone } = req.body;
     try {
         // Verificar si el restaurante ya existe
-        const existingRestaurant = await RestaurantModel.findOne({ email });
+        const existingRestaurant = await restaurantModel.findOne({ email });
         if (existingRestaurant) {
             return res.status(400).json({ success: false, message: "Restaurant already exists" });
         }
 
         // Crear el nuevo restaurante
-        const newRestaurant = new RestaurantModel({ name, email, localisation, phone });
+        const newRestaurant = new restaurantModel({ name, email, localisation, phone });
         await newRestaurant.save();
 
         res.status(201).json({ success: true, message: "Restaurant created successfully" });

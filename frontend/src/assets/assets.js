@@ -10,7 +10,8 @@ import menu_5 from './menu_5.png'
 import menu_6 from './menu_6.png'
 import menu_7 from './menu_7.png'
 import menu_8 from './menu_8.png'
-
+import bell from './bell.png'
+import bellring from './bellavec_ring.png'
 import food_1 from './food_1.png'
 import food_2 from './food_2.png'
 import food_3 from './food_3.png'
@@ -43,6 +44,12 @@ import food_29 from './food_29.png'
 import food_30 from './food_30.png'
 import food_31 from './food_31.png'
 import food_32 from './food_32.png'
+import add_icon from './add_icon.png'
+import order_icon from './order_icon.png'
+import order_list from './order_list_icon.png'
+import historique from './historique_icon.png'
+import refer from './refer_icon.png'
+import accept from './Accept.png'
 
 import add_icon_white from './add_icon_white.png'
 import add_icon_green from './add_icon_green.png'
@@ -85,7 +92,15 @@ export const assets = {
     bag_icon,
     livreur,
     parcel_icon,
-    upload_area
+    upload_area,
+    bell,
+    bellring,
+    add_icon,
+    order_icon,
+    order_list,
+    historique,
+    refer,
+    accept
 }
 
 export const menu_list = [

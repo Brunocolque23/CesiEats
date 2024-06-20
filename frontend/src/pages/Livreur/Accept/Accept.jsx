@@ -28,7 +28,23 @@ const Order = () => {
     }
   };
 
-  const updateOrderStatus = async (orderId, status) => {
+  const createNotification = async (message, role, userId) => {
+    const notificationData = {
+      message,
+      role,
+      userid: userId,
+      status: 'new'
+    };
+    try {
+      await axios.post(`${url}/api/notification/createNotification`, notificationData);
+      toast.success("Notification sent successfully");
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      toast.error("Error sending notification");
+    }
+  };
+
+  const updateOrderStatus = async (orderId, status, userId, restaurantName) => {
     try {
       const response = await axios.post(`${url}/api/order/status`, {
         orderId,
@@ -36,10 +52,22 @@ const Order = () => {
       });
       if (response.data.success) {
         await fetchAllOrders();
+        toast.success(`Order ${orderId} ${status === 'Waiting for Livreur' ? 'Accepted' : 'Rejected'}`);
         if (status === 'Food Processing2') {
           setSelectedOrder(orderId); // Set the selected order after accepting it
+          // Send notification to restaurant
+          await createNotification('A Deliverer has accepted your order', 'restaurant', restaurantName);
+          // Send notification to user
+          await createNotification('A Deliverer has accepted your order', 'user', userId);
         }
-        toast.success(`Order ${orderId} ${status === 'Accepted' ? 'accepted' : 'rejected'}`);
+        if (status === 'On our way') {
+          // Send notification to user
+          await createNotification('On our way to you our dear costumer', 'user', userId);
+        }
+        if (status === 'Delivered') {
+          // Send notification to user
+          await createNotification('The order has been delivered to the user', 'user', userId);
+        }
       } else {
         toast.error(`Error updating order ${orderId}`);
       }
@@ -52,7 +80,6 @@ const Order = () => {
   const updateLivreurId = async (orderId) => {
     try {
       const livreurid = localStorage.getItem("livreurid");
-      //toast.error(livreurid);
       const response = await axios.post(`${url}/api/order/update-livreur`, {
         orderId,
         livreurid: livreurid || 'default_livreurid', // Include livreurid in the request
@@ -89,7 +116,8 @@ const Order = () => {
   }, []);
 
   const getQRCodeValue = (order) => {
-    return `${order._id} ${order.address.firstName} ${order.address.lastName}, ${order.address.city}`;
+    const items = order.items.map(item => item.name).join(', ');
+    return `${order._id} ${order.address.firstName} ${order.address.lastName}, ${order.address.city} - Items: ${items}`;
   };
 
   return (
@@ -125,7 +153,8 @@ const Order = () => {
                   <button
                     className='custom-btn accept-btn'
                     onClick={() => {
-                      updateOrderStatus(order._id, 'Food Processing2');
+                      const restaurantName = localStorage.getItem('restaurantname');
+                      updateOrderStatus(order._id, 'Food Processing2', order.userId, restaurantName);
                       updateLivreurId(order._id);
                     }}
                   >
@@ -142,7 +171,7 @@ const Order = () => {
               {order.status === 'Food Processing2' && (
                 <button
                   className='custom-btn receive-btn'
-                  onClick={() => updateOrderStatus(order._id, 'On our way')}
+                  onClick={() => updateOrderStatus(order._id, 'On our way', order.userId)}
                 >
                   Received
                 </button>
@@ -150,7 +179,7 @@ const Order = () => {
               {order.status === 'On our way' && (
                 <button
                   className='custom-btn ouw-btn'
-                  onClick={() => updateOrderStatus(order._id, 'Delivered')}
+                  onClick={() => updateOrderStatus(order._id, 'Delivered', order.userId)}
                 >
                   Delivered
                 </button>
