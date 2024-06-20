@@ -37,7 +37,7 @@ const Order = () => {
     };
     try {
       await axios.post(`${url}/api/notification/createNotification`, notificationData);
-      toast.success("Notification sent successfully");
+      //toast.success("Notification sent successfully");
     } catch (error) {
       console.error('Error sending notification:', error);
       toast.error("Error sending notification");
@@ -52,7 +52,7 @@ const Order = () => {
       });
       if (response.data.success) {
         await fetchAllOrders();
-        toast.success(`Order ${orderId} ${status === 'Waiting for Livreur' ? 'Accepted' : 'Rejected'}`);
+        //toast.success(`Order ${orderId} ${status === 'Waiting for Livreur' ? 'Accepted' : 'Rejected'}`);
         if (status === 'Food Processing2') {
           setSelectedOrder(orderId); // Set the selected order after accepting it
           // Send notification to restaurant

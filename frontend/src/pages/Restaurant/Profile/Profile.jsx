@@ -154,6 +154,9 @@ const Profile = () => {
                 <div className="button-container">
                     <button type="button" className="btn btn-secondary profile-btn" onClick={handleUpdateClick}>UPDATE</button>
                 </div>
+                <div className="button-container">
+                    <button type="button" className="btn btn-secondary profile-btn" onClick={handleUpdateClick}>DELETE</button>
+                </div>
             </form>
         </div>
     );
